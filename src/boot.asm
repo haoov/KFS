@@ -9,8 +9,8 @@ long MAGIC
 long FLAGS
 long CHECKSUM
 
-section .bss
-resb 8192 ;                     Reserv 8 KB for the stack
+section .bss ;                  Contains uninitialised variables (Block Started by Symbol)
+resb 8192 ;                     Reserv 8 KB for the stack (8192 octets)
 stack_top: ;                    Label for stack adress
 
 section .text ;                 Define a code section where the program is stored. Program's intruction go there.
