@@ -1,51 +1,32 @@
 # Project
-TARGET		= kfs.iso
-KERNEL		= kernel.bin
-PROJ_DIR	= $(realpath $(CURDIR))
-SRC_DIR		= $(PROJ_DIR)/src
-OBJ_DIR		= $(PROJ_DIR)/objs
-LDBUILD_DIR	= $(PROJ_DIR)/build_loader
+TARGET		:= kfs.iso
+KERNEL		:= kernel.bin
+PROJ_DIR	:= $(realpath $(CURDIR))
+SRC_DIR		:= $(PROJ_DIR)/src
+OBJ_DIR		:= $(PROJ_DIR)/objs
+TARGET_DIR	:= $(PROJ_DIR)/target
 
 # Files
-SRCS		= $(wildcard $(SRC_DIR)/*.c)
-OBJS		= $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
-LSCRIPT		= 
+LINKER		:= $(TARGET_DIR)/x86_64/linker.ld
+BOOT		:= $(SRC_DIR)/boot
+SRCS		:= $(wildcard $(SRC_DIR)/*.c)
+OBJS		:= $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
 
 # Compiler
-CC			= gcc
-CFLAGS		= -m64 \
-			  -fno-stack-protector \
-			  -nostdlib \
-			  -nodefaultlibs \
-			  -ffreestanding \
-			  -z max-page-size=0x1000 \
-			  -mno-red-zone \
-			  -mno-mmx \
-			  -mno-sse \
-			  -mno-sse2 \
-			  -std=gnu99 \
-			  -O2 \
-			  -Wall \
-			  -Wextra \
-			  -Werror
-LFLAGS		= -ffreestanding -O2 -nostdlib -lgcc
+ASMC		:= nasm
+CC			:= gcc
+CFLAGS		:=	-Wall \
+				-Wextra \
+				-Werror \
+				-ffreestanding \
+				-fno-builtin \
+				-fno-stack-protector
+LFLAGS		:= -ffreestanding -nostdlib
 
 # Rules
 all : $(TARGET)
 
-$(TARGET) : $(KERNEL)
-	grub-mkrescue -o $(TARGET).iso $(LDBUILD_DIR)/
-
-$(KERNEL) : $(OBJS)
-	$(CC) $(LFLAGS) -T $(LSCRIPT) $^ -o $@
-
-compile : $(OBJS)
-
-$(OBJ_DIR)/%.o : $(SRC_DIR)/%.c | $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(OBJ_DIR) :
-	mkdir -p $@
-
-clean :
-	rm -rf $(OBJS)
+$(TARGET) :
+	$(ASMC) -f elf64 $(BOOT).asm -o $(BOOT).o
+	$(CC) -T $(LINKER) $(LFLAGS) $(BOOT).o -o $(TARGET_DIR)/x86_64/iso/boot/kernel.bin
+	grub-mkrescue -o $@ $(TARGET_DIR)/x86_64/iso
