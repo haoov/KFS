@@ -1,10 +1,8 @@
-KERNEL_VMA = 1M;
-
-ENTRY(_start)
+ENTRY(start)
 
 SECTIONS
 {
-	. = KERNEL_VMA;
+	. = 1M;
 
 	.boot :
 	{
