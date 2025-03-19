@@ -20,7 +20,7 @@ LFLAGS		:= -ffreestanding -nostdlib
 all : $(TARGET)
 
 $(TARGET) : $(X86_64_ASM_OBJS)
-	$(CC) -T $(LINKER) $(LFLAGS) $^ -o $(X86_64KERNEL_BIN)
+	x86_64-elf-ld -n -o $(X86_64KERNEL_BIN) -T $(LINKER) $(LFLAGS) $^
 	grub-mkrescue -o $@ ./targets/x86_64/iso
 
 $(X86_64_OBJ_DIR)/%.o : $(X86_64_SRC_DIR)/%.asm | $(X86_64_OBJ_DIR)
