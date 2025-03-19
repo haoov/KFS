@@ -1,32 +1,37 @@
 # Project
-TARGET		:= kfs.iso
-KERNEL		:= kernel.bin
-PROJ_DIR	:= $(realpath $(CURDIR))
-SRC_DIR		:= $(PROJ_DIR)/src
-OBJ_DIR		:= $(PROJ_DIR)/objs
-TARGET_DIR	:= $(PROJ_DIR)/target
+TARGET			:= kfs.iso
+KERNEL			:= kernel.bin
+X86_64_SRC_DIR	:= src/impl/x86_64
+X86_64_OBJ_DIR	:= objs/x86_64
 
 # Files
-LINKER		:= $(TARGET_DIR)/x86_64/linker.ld
-BOOT		:= $(SRC_DIR)/boot
-SRCS		:= $(wildcard $(SRC_DIR)/*.c)
-OBJS		:= $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
+X86_64_LINKER		:= targets/x86_64/linker.ld
+X86_64_ASM_SRCS		:= $(wildcard $(X86_64_SRC_DIR)/*.asm)
+X86_64_ASM_OBJS		:= $(patsubst $(X86_64_SRC_DIR)/%.asm,$(X86_64_OBJ_DIR)/%.o,$(X86_64_ASM_SRCS))
+X86_64KERNEL_BIN	:= ./targets/x86_64/iso/boot/kernel.bin
 
 # Compiler
 ASMC		:= nasm
-CC			:= gcc
-CFLAGS		:=	-Wall \
-				-Wextra \
-				-Werror \
-				-ffreestanding \
-				-fno-builtin \
-				-fno-stack-protector
+CC			:= x86_64-elf-gcc
+CFLAGS		:= -ffreestanding \
 LFLAGS		:= -ffreestanding -nostdlib
 
 # Rules
 all : $(TARGET)
 
-$(TARGET) :
-	$(ASMC) -f elf64 $(BOOT).asm -o $(BOOT).o
-	$(CC) -T $(LINKER) $(LFLAGS) $(BOOT).o -o $(TARGET_DIR)/x86_64/iso/boot/kernel.bin
-	grub-mkrescue -o $@ $(TARGET_DIR)/x86_64/iso
+$(TARGET) : $(X86_64_ASM_OBJS)
+	$(CC) -T $(LINKER) $(LFLAGS) $^ -o $(X86_64KERNEL_BIN)
+	grub-mkrescue -o $@ ./targets/x86_64/iso
+
+$(X86_64_OBJ_DIR)/%.o : $(X86_64_SRC_DIR)/%.asm | $(X86_64_OBJ_DIR)
+	$(ASMC) -f elf64 $< -o $@
+
+$(X86_64_OBJ_DIR) :
+	mkdir -p $@
+
+clean :
+	rm -rf objs
+	rm -rf $(X86_64KERNEL_BIN)
+
+fclean : clean
+	rm -rf $(TARGET)
