@@ -19,7 +19,8 @@ RUN apt install libmpfr-dev -y
 RUN apt install texinfo -y
 RUN apt install libisl-dev -y
 
-RUN mkdir /root/src && cd /root/src
+RUN mkdir /root/src
+WORKDIR /root/src
 
 # Set env
 ENV PREFIX=/root/opt/cross
@@ -46,8 +47,6 @@ RUN	mkdir build-binutils && \
 										--disable-werror && \
 	make && \
 	make install
-
-RUN cd /root/src
 
 #Build gcc
 RUN	mkdir build-gcc && \
