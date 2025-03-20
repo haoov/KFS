@@ -21,8 +21,12 @@ X86_64_LNK		:= x86_64-elf-ld
 ASM				:= nasm
 
 # Building iso for x86_64
+ build-x86_64:
+	sudo docker build buildenv -t kfs-buildenv
+	sudo docker run --rm -v .:/root/KFS kfs-buildenv make $(TARGET)
+
 # Create the iso file with grub installed
-build-x86_64 $(TARGET): $(X86_64_KERNEL) | $(X86_64_DIST)
+$(TARGET): $(X86_64_KERNEL) | $(X86_64_DIST)
 	grub-mkrescue -o $(X86_64_DIST)/$(TARGET) $(X86_64_TARGET)/iso
 
 # Link object files with linker.ld as script to create the kernel binary
@@ -44,6 +48,4 @@ clean:
 fclean: clean
 	rm -rf $(DIST_DIR)
 
-re: fclean all
-
-.PHONY: all clean fclean re
+.PHONY: build-x86_64 all clean fclean
