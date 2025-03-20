@@ -1,16 +1,9 @@
-section .multiboot_header
-header_start:
-	; magic number
-	dd 0xe85250d6 ; multiboot2
-	; architecture
-	dd 0 ; protected mode i386
-	; header length
-	dd header_end - header_start
-	; checksum
-	dd 0x100000000 - (0xe85250d6 + 0 + (header_end - header_start))
+%define FLAGS 0x3 ; align + meminfo flags
+%define MAGIC 0x1BADB002 ; multiboot magic number
+%define CHECKSUM -(MAGIC + FLAGS)
 
-	; end tag
-	dw 0
-	dw 0
-	dd 8
-header_end:
+section .multiboot_header
+	align 8
+	dd MAGIC
+	dd FLAGS
+	dd CHECKSUM
