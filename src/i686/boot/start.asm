@@ -3,6 +3,10 @@ global start
 section .text
 bits 32
 
+; =============================================================================
+; Main entry point
+; =============================================================================
+
 start:
 
     move esp, stack_top         ; Set stack pointer to the top of the stack
@@ -16,6 +20,12 @@ start:
 	mov dword [0xb8000], 0x2f4b2f4f
 	hlt
 
+; =============================================================================
+; Check subroutines
+; =============================================================================
+; Verify the code has been loaded by a multiboot-compliant bootloader (e. grub)
+; The bootloader is expected to set eax to 0x36d76289 (multiboot1 magic number 32bit)
+
 check_multiboot:
     cmp eax, 0x36d76289         ; Compare the value in eax and magic number
     jne .no_multiboot           ; If it do not correspond, jump to no_multiboot
@@ -25,9 +35,13 @@ check_multiboot:
     mov al, "M"                 ; Set the error code to multiboot
     jmp error
 
+; ==============================================================================
+; Paging Setup
+; ==============================================================================
+; Set up page tables for 32-bit paging
+; Map the first 4 MiB of physical memory (1024 pages of 4 KiB each)
+
 setup_paging32:
-    ; Set up page tables for 32-bit paging
-    ; Map the first 4 MiB of physical memory (1024 pages of 4 KiB each)
 
     ; Initialize page directory with the address of the first page table
     mov eax, page_table         ; Load address of page table
@@ -61,13 +75,24 @@ enable_paging:
 
         ret                         ; Return after enabling paging
 
+; ==============================================================================
+; Error Handling
+; ==============================================================================
+; Error handler - displays error code on screen and halts
+
 error:
+    ; Print "ERR: X" where X is the error code
+    ; Write directly to VGA text buffer at 0xb8000
     mov dword [0xb8000], 0x4f524f45  ; 'ER' in red on white
     mov dword [0xb8004], 0x4f3a4f52  ; 'R:' in red on white
     mov dword [0xb8008], 0x4f204f20  ; '  ' in red on white
     mov byte  [0xb800a], al          ; Error code character in red on white
 
     hlt                              ; HALT THE CPU
+
+; ==============================================================================
+; Data Sections
+; ==============================================================================
 
 section .bss
 align 4096                      ; Align to 4 KiB (page size)
