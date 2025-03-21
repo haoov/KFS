@@ -9,5 +9,10 @@ void	kernel_main(void)
 	screen.cursor.row = 0;
 	screen.cursor.color = PCOLOR_GREEN | PCOLOR_BLACK << 4;
 	clear_screen(&screen);
-	print_str("Hello welcome to our KFS !", &screen);
+	print_nl(&screen);
+	print_nl(&screen);
+	print_nl(&screen);
+	print_nl(&screen);
+	print_nl(&screen);
+	print_nl(&screen);
 }

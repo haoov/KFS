@@ -27,7 +27,7 @@ void	print_nl(struct screen *screen)
 
 	cursor_pos = screen->cursor.col + COLS_NUM * screen->cursor.row;
 	screen->cursor.col = 0;
-	if (screen->cursor.row > ROWS_NUM)
+	if (screen->cursor.row >= ROWS_NUM)
 	{
 		for (int row = 1; row < ROWS_NUM; ++row)
 		{

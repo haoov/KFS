@@ -1,57 +1,69 @@
 # Project
 TARGET			:= kfs.iso
+ARCH			?= i686
 DIST_DIR		:= dist
 BUILD_DIR		:= build
 SRC_DIR			:= src
 TARGET_DIR		:= targets
-X86_64_SRC		:= $(SRC_DIR)/x86_64
-X86_64_BUILD	:= $(BUILD_DIR)/x86_64
-X86_64_DIST		:= $(DIST_DIR)/x86_64
-X86_64_TARGET	:= $(TARGET_DIR)/x86_64
+
+ARCH_SRC		:= $(SRC_DIR)/$(ARCH)
+ARCH_BUILD		:= $(BUILD_DIR)/$(ARCH)
+ARCH_DIST		:= $(DIST_DIR)/$(ARCH)
+ARCH_TARGET		:= $(TARGET_DIR)/$(ARCH)
+
+KERNEL_SRC		:= $(SRC_DIR)/kernel/src
+KERNEL_BUILD	:= $(BUILD_DIR)/kernel
+KERNEL_INC		:= $(SRC_DIR)/kernel/inc
 
 # Files
-X86_64_LINKER	:= $(X86_64_TARGET)/linker.ld
-X86_64_ASM_SRCS	:= $(wildcard $(X86_64_SRC)/boot/*.asm)
-X86_64_ASM_OBJS	:= $(patsubst $(X86_64_SRC)/boot/%.asm,$(X86_64_BUILD)/%.o,$(X86_64_ASM_SRCS))
-X86_64_KERNEL	:= $(X86_64_TARGET)/iso/boot/kernel.bin
-X86_64_C_SRCS	:= $(wildcard $(SRC_DIR)/kernel/src/*.c)
-X86_64_C_OBJS	:= $(patsubst $(SRC_DIR)/kernel/src/%.c,$(BUILD_DIR)/kernel/%.o,$(X86_64_C_SRCS))
+ARCH_LINKER		:= $(ARCH_TARGET)/linker.ld
+ARCH_ASM_SRCS	:= $(wildcard $(ARCH_SRC)/boot/*.asm)
+ARCH_ASM_OBJS	:= $(patsubst $(ARCH_SRC)/boot/%.asm,$(ARCH_BUILD)/%.o,$(ARCH_ASM_SRCS))
+ARCH_KERNEL		:= $(ARCH_TARGET)/iso/boot/kernel.bin
+
+KERNEL_SRCS		:= $(wildcard $(KERNEL_SRC)/*.c)
+KERNEL_BUILDS	:= $(patsubst $(KERNEL_SRC)/%.c,$(KERNEL_BUILD)/%.o,$(KERNEL_SRCS))
 
 # Compiler
-X86_64_CC		:= x86_64-elf-gcc
-X86_64_LNK		:= x86_64-elf-ld
+CC				:= $(ARCH)-elf-gcc
+CFLAGS			:= -ffreestanding
+LINK			:= $(ARCH)-elf-ld
 ASM				:= nasm
+ASMFLAGS		:= -f elf32
+ifeq ($(ARCH), x86_64)
+	ASMFLAGS	:= -f elf64
+endif
 
-# Building iso for x86_64
- build-x86_64:
+# Building iso for specified ARCH
+ build:
 	sudo docker build buildenv -t kfs-buildenv
-	sudo docker run --rm -v .:/root/KFS kfs-buildenv make $(TARGET)
+	sudo docker run --rm -v .:/root/KFS kfs-buildenv make $(TARGET) ARCH=$(ARCH)
 
 # Create the iso file with grub installed
-$(TARGET): $(X86_64_KERNEL) | $(X86_64_DIST)
-	grub-mkrescue -o $(X86_64_DIST)/$(TARGET) $(X86_64_TARGET)/iso
+$(TARGET): $(ARCH_KERNEL) | $(ARCH_DIST)
+	grub-mkrescue -o $(ARCH_DIST)/$(TARGET) $(ARCH_TARGET)/iso
 
 # Link object files with linker.ld as script to create the kernel binary
-$(X86_64_KERNEL): $(X86_64_ASM_OBJS) $(X86_64_C_OBJS)
-	$(X86_64_LNK) -n -o $@ -T $(X86_64_LINKER) $(X86_64_ASM_OBJS) $(X86_64_C_OBJS)
+$(ARCH_KERNEL): $(ARCH_ASM_OBJS) $(KERNEL_BUILDS)
+	$(LINK) -n -o $@ -T $(ARCH_LINKER) $(ARCH_ASM_OBJS) $(KERNEL_BUILDS)
 
 # Assemble each asm file
-$(X86_64_BUILD)/%.o: $(X86_64_SRC)/boot/%.asm | $(X86_64_BUILD)
-	$(ASM) -f elf64 $< -o $@
+$(ARCH_BUILD)/%.o: $(ARCH_SRC)/boot/%.asm | $(ARCH_BUILD)
+	$(ASM) $(ASMFLAGS) $< -o $@
 
 # Compile kernel c files
-$(BUILD_DIR)/kernel/%.o: $(SRC_DIR)/kernel/src/%.c | $(BUILD_DIR)/kernel
-	$(X86_64_CC) -c $< -o $@ -I $(SRC_DIR)/kernel/inc -ffreestanding
+$(KERNEL_BUILD)/%.o: $(KERNEL_SRC)/%.c | $(KERNEL_BUILD)
+	$(CC) -c $< -o $@ -I $(KERNEL_INC) -ffreestanding
 
 # Create directory
-$(X86_64_BUILD) $(X86_64_DIST) $(BUILD_DIR)/kernel:
+$(ARCH_BUILD) $(ARCH_DIST) $(KERNEL_BUILD):
 	mkdir -p $@
 
 clean:
 	rm -rf $(BUILD_DIR)
-	rm -rf $(X86_64_KERNEL)
+	rm -rf $(ARCH_KERNEL)
 
 fclean: clean
 	rm -rf $(DIST_DIR)
 
-.PHONY: build-x86_64 all clean fclean
+.PHONY: build all clean fclean

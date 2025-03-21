@@ -1,5 +1,5 @@
 # Pull image with custum minimal cross compiler
-FROM rsabbah/x86_64-elf-gcc
+FROM rsabbah/x86-elf-gcc
 
 # Update and install dependencies
 RUN apt-get update
