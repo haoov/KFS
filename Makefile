@@ -21,8 +21,8 @@ ARCH_ASM_SRCS	:= $(wildcard $(ARCH_SRC)/boot/*.asm)
 ARCH_ASM_OBJS	:= $(patsubst $(ARCH_SRC)/boot/%.asm,$(ARCH_BUILD)/%.o,$(ARCH_ASM_SRCS))
 ARCH_KERNEL		:= $(ARCH_TARGET)/iso/boot/kernel.bin
 
-KERNEL_SRCS		:= $(wildcard $(KERNEL_SRC)/*.c)
-KERNEL_BUILDS	:= $(patsubst $(KERNEL_SRC)/%.c,$(KERNEL_BUILD)/%.o,$(KERNEL_SRCS))
+KERNEL_SRCS		:= $(shell find $(KERNEL_SRC) -type f -name "*.c")
+KERNEL_OBJS		:= $(patsubst $(KERNEL_SRC)/%.c,$(KERNEL_BUILD)/%.o,$(KERNEL_SRCS))
 
 # Compiler
 CC				:= $(ARCH)-elf-gcc
@@ -44,19 +44,20 @@ $(TARGET): $(ARCH_KERNEL) | $(ARCH_DIST)
 	grub-mkrescue -o $(ARCH_DIST)/$(TARGET) $(ARCH_TARGET)/iso
 
 # Link object files with linker.ld as script to create the kernel binary
-$(ARCH_KERNEL): $(ARCH_ASM_OBJS) $(KERNEL_BUILDS)
-	$(LINK) -n -o $@ -T $(ARCH_LINKER) $(ARCH_ASM_OBJS) $(KERNEL_BUILDS)
+$(ARCH_KERNEL): $(ARCH_ASM_OBJS) $(KERNEL_OBJS)
+	$(LINK) -n -o $@ -T $(ARCH_LINKER) $(ARCH_ASM_OBJS) $(KERNEL_OBJS)
 
 # Assemble each asm file
 $(ARCH_BUILD)/%.o: $(ARCH_SRC)/boot/%.asm | $(ARCH_BUILD)
 	$(ASM) $(ASMFLAGS) $< -o $@
 
 # Compile kernel c files
-$(KERNEL_BUILD)/%.o: $(KERNEL_SRC)/%.c | $(KERNEL_BUILD)
+$(KERNEL_BUILD)/%.o: $(KERNEL_SRC)/%.c
+	mkdir -p $(dir $@)
 	$(CC) -c $< -o $@ -I $(KERNEL_INC) -ffreestanding
 
 # Create directory
-$(ARCH_BUILD) $(ARCH_DIST) $(KERNEL_BUILD):
+$(ARCH_BUILD) $(ARCH_DIST):
 	mkdir -p $@
 
 clean:
