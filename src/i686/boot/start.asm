@@ -6,10 +6,8 @@ bits 32
 ; =============================================================================
 ; Main entry point
 ; =============================================================================
-
 start:
-
-    move esp, stack_top         ; Set stack pointer to the top of the stack
+    mov esp, stack_top         ; Set stack pointer to the top of the stack
 
     call check_multiboot        ; Performs compatibility
 
@@ -23,9 +21,9 @@ start:
 ; =============================================================================
 ; Check subroutines
 ; =============================================================================
+
 ; Verify the code has been loaded by a multiboot-compliant bootloader (e. grub)
 ; The bootloader is expected to set eax to 0x36d76289 (multiboot1 magic number 32bit)
-
 check_multiboot:
     cmp eax, 0x36d76289         ; Compare the value in eax and magic number
     jne .no_multiboot           ; If it do not correspond, jump to no_multiboot
@@ -38,9 +36,9 @@ check_multiboot:
 ; ==============================================================================
 ; Paging Setup
 ; ==============================================================================
+
 ; Set up page tables for 32-bit paging
 ; Map the first 4 MiB of physical memory (1024 pages of 4 KiB each)
-
 setup_paging32:
 
     ; Initialize page directory with the address of the first page table
@@ -78,8 +76,8 @@ enable_paging:
 ; ==============================================================================
 ; Error Handling
 ; ==============================================================================
-; Error handler - displays error code on screen and halts
 
+; Error handler - displays error code on screen and halts
 error:
     ; Print "ERR: X" where X is the error code
     ; Write directly to VGA text buffer at 0xb8000
