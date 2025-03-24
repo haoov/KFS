@@ -35,7 +35,7 @@ void	*memset(void *ptr, int val, uint32_t size)
 	}
 
 	// Set all unaligned bytes after
-	na = w & 0b11;
+	na = size & 0b11;
 	ui8ptr = (uint8_t*)ui32ptr;
 	while (na--)
 	{

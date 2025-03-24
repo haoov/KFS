@@ -2,6 +2,8 @@
 
 void	kmain(void)
 {
-	(void)kclear();
-	(void)kprint("Hello! Welcome to our KFS project!\n");
+	gdt_install();
+	idt_install();
+	isrs_install();
+	kclear();
 }

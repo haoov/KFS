@@ -71,6 +71,7 @@ $(ARCH_BUILD) $(ARCH_DIST) $(KERNEL_BUILD):
 clean:
 	rm -rf $(BUILD_DIR)
 	rm -rf $(KERNEL)
+	rm -rf $(KERNEL_LIB)
 
 fclean: clean
 	rm -rf $(DIST_DIR)
