@@ -1,6 +1,6 @@
 # Project
 TARGET			:= kfs.iso
-ARCH			?= i686
+ARCH			:= i686
 DIST_DIR		:= dist
 BUILD_DIR		:= build
 SRC_DIR			:= src
@@ -11,28 +11,28 @@ ARCH_BUILD		:= $(BUILD_DIR)/$(ARCH)
 ARCH_DIST		:= $(DIST_DIR)/$(ARCH)
 ARCH_TARGET		:= $(TARGET_DIR)/$(ARCH)
 
-KERNEL_SRC		:= $(SRC_DIR)/kernel/src
-KERNEL_BUILD	:= $(BUILD_DIR)/kernel
-KERNEL_INC		:= $(SRC_DIR)/kernel/inc
+KERNEL_SRC		:= $(ARCH_SRC)/kernel/src
+KERNEL_BUILD	:= $(ARCH_BUILD)/kernel
+KERNEL_INC		:= $(ARCH_SRC)/kernel/inc
+KERNEL_LIB_DIR	:= $(ARCH_SRC)/kernel/klib
 
 # Files
-ARCH_LINKER		:= $(ARCH_TARGET)/linker.ld
-ARCH_ASM_SRCS	:= $(wildcard $(ARCH_SRC)/boot/*.asm)
-ARCH_ASM_OBJS	:= $(patsubst $(ARCH_SRC)/boot/%.asm,$(ARCH_BUILD)/%.o,$(ARCH_ASM_SRCS))
-ARCH_KERNEL		:= $(ARCH_TARGET)/iso/boot/kernel.bin
+LINKER			:= $(ARCH_TARGET)/linker.ld
+ASM_SRCS		:= $(wildcard $(ARCH_SRC)/boot/*.asm)
+ASM_OBJS		:= $(patsubst $(ARCH_SRC)/boot/%.asm,$(ARCH_BUILD)/%.o,$(ASM_SRCS))
+KERNEL			:= $(ARCH_TARGET)/iso/boot/kernel.bin
 
 KERNEL_SRCS		:= $(wildcard $(KERNEL_SRC)/*.c)
-KERNEL_BUILDS	:= $(patsubst $(KERNEL_SRC)/%.c,$(KERNEL_BUILD)/%.o,$(KERNEL_SRCS))
+KERNEL_OBJS		:= $(patsubst $(KERNEL_SRC)/%.c,$(KERNEL_BUILD)/%.o,$(KERNEL_SRCS))
+KERNEL_LIB_SRCS	:= $(wildcard $(KERNEL_LIB_DIR)/src/*.c)
+KERNEL_LIB_OBJS	:= $(KERNEL_LIB_SRCS:.c=.o)
+KERNEL_LIB		:= $(KERNEL_LIB_DIR)/klib.o
 
 # Compiler
 CC				:= $(ARCH)-elf-gcc
-CFLAGS			:= -ffreestanding
 LINK			:= $(ARCH)-elf-ld
 ASM				:= nasm
 ASMFLAGS		:= -f elf32
-ifeq ($(ARCH), x86_64)
-	ASMFLAGS	:= -f elf64
-endif
 
 # Building iso for specified ARCH
  build:
@@ -40,20 +40,29 @@ endif
 	sudo docker run --rm -v .:/root/KFS kfs-buildenv make $(TARGET) ARCH=$(ARCH)
 
 # Create the iso file with grub installed
-$(TARGET): $(ARCH_KERNEL) | $(ARCH_DIST)
+$(TARGET): $(KERNEL) | $(ARCH_DIST)
 	grub-mkrescue -o $(ARCH_DIST)/$(TARGET) $(ARCH_TARGET)/iso
 
 # Link object files with linker.ld as script to create the kernel binary
-$(ARCH_KERNEL): $(ARCH_ASM_OBJS) $(KERNEL_BUILDS)
-	$(LINK) -n -o $@ -T $(ARCH_LINKER) $(ARCH_ASM_OBJS) $(KERNEL_BUILDS)
+$(KERNEL): $(ASM_OBJS) $(KERNEL_LIB) $(KERNEL_OBJS)
+	$(LINK) -n -o $@ -T $(LINKER) $(ASM_OBJS) $(KERNEL_OBJS) $(KERNEL_LIB)
 
 # Assemble each asm file
 $(ARCH_BUILD)/%.o: $(ARCH_SRC)/boot/%.asm | $(ARCH_BUILD)
 	$(ASM) $(ASMFLAGS) $< -o $@
 
+# Llink the kernel library and clean objects files
+$(KERNEL_LIB): $(KERNEL_LIB_OBJS)
+	$(LINK) -r $^ -o $@
+	rm -rf $(KERNEL_LIB_OBJS)
+
+# Compile objects file for the kernel library
+$(KERNEL_LIB_DIR)/src/%.o: $(KERNEL_LIB_DIR)/src/%.c
+	$(CC) -c $< -o $@ -I $(KERNEL_LIB_DIR)/inc
+
 # Compile kernel c files
 $(KERNEL_BUILD)/%.o: $(KERNEL_SRC)/%.c | $(KERNEL_BUILD)
-	$(CC) -c $< -o $@ -I $(KERNEL_INC) -ffreestanding
+	$(CC) -c $< -o $@ -I $(KERNEL_INC) -I $(KERNEL_LIB_DIR)/inc
 
 # Create directory
 $(ARCH_BUILD) $(ARCH_DIST) $(KERNEL_BUILD):
@@ -61,7 +70,7 @@ $(ARCH_BUILD) $(ARCH_DIST) $(KERNEL_BUILD):
 
 clean:
 	rm -rf $(BUILD_DIR)
-	rm -rf $(ARCH_KERNEL)
+	rm -rf $(KERNEL)
 
 fclean: clean
 	rm -rf $(DIST_DIR)
