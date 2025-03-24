@@ -1,4 +1,5 @@
 #include "isr.h"
+#include "intf.h"
 
 uint8_t	*except_msg[] =
 {

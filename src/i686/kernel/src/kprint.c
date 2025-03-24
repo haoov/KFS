@@ -32,18 +32,18 @@ void	kclear(void)
 {
 	for (int r = 0; r < ROWS_NUM; ++r)
 	{
-		(void)clear_row(r);
+		clear_row(r);
 	}
 	col = 0;
 	row = 0;
-	(void)update_csr();
+	update_csr();
 }
 
 void	scroll_down(void)
 {
 	struct chr	char_s;
 
-	for (int r = 1; row < ROWS_NUM; ++r)
+	for (int r = 1; r < ROWS_NUM; ++r)
 	{
 		for (int c = 0; c < COLS_NUM; ++c)
 		{
@@ -65,10 +65,10 @@ void	print_nl(void)
 	}
 	else
 	{
-		(void)scroll_down();
+		scroll_down();
 		clear_row(ROWS_NUM - 1);
 	}
-	(void)update_csr();
+	update_csr();
 }
 
 void	print_char(const char c)
@@ -81,22 +81,40 @@ void	print_char(const char c)
 	csr_idx = SCR_BUF_IDX(col, row);
 	if (c == '\n')
 	{
-		(void)print_nl();
+		print_nl();
 		return;
 	}
-	if (col > COLS_NUM)
+	if (col == COLS_NUM)
 	{
-		(void)print_nl();
+		print_nl();
 	}
 	buf[csr_idx] = char_s;
 	++col;
-	(void)update_csr();
+	update_csr();
 }
 
 void	kprint(const char *str)
 {
 	for (uint32_t i = 0; str[i]; ++i)
 	{
-		(void)print_char(str[i]);
+		print_char(str[i]);
 	}
+}
+
+void	kprint_hex(uint32_t n)
+{
+    char hex_digits[] = "0123456789ABCDEF";
+    char buffer[12];
+    buffer[0] = '0';
+    buffer[1] = 'x';
+	buffer[10] = '\n';
+    buffer[11] = '\0';
+
+    for (int i = 9; i >= 2; i--)
+    {
+        buffer[i] = hex_digits[n & 0xF];
+        n >>= 4;
+    }
+
+    kprint(buffer);
 }

@@ -37,219 +37,219 @@ global isr31
 isr0:
 	mov dword [0xb8000], 0x2f4b2f4f
     cli
-    push byte 0
-    push byte 0
+    push dword 0
+    push dword 0
     jmp isr_common_subr
 
 ;  1: Debug Exception
 isr1:
     cli
-    push byte 0
-    push byte 1
+    push dword 0
+    push dword 1
     jmp isr_common_subr
 
 ;  2: Non Maskable Interrupt Exception
 isr2:
     cli
-    push byte 0
-    push byte 2
+    push dword 0
+    push dword 2
     jmp isr_common_subr
 
 ;  3: Int 3 Exception
 isr3:
     cli
-    push byte 0
-    push byte 3
+    push dword 0
+    push dword 3
     jmp isr_common_subr
 
 ;  4: INTO Exception
 isr4:
     cli
-    push byte 0
-    push byte 4
+    push dword 0
+    push dword 4
     jmp isr_common_subr
 
 ;  5: Out of Bounds Exception
 isr5:
     cli
-    push byte 0
-    push byte 5
+    push dword 0
+    push dword 5
     jmp isr_common_subr
 
 ;  6: Invalid Opcode Exception
 isr6:
     cli
-    push byte 0
-    push byte 6
+    push dword 0
+    push dword 6
     jmp isr_common_subr
 
 ;  7: Coprocessor Not Available Exception
 isr7:
     cli
-    push byte 0
-    push byte 7
+    push dword 0
+    push dword 7
     jmp isr_common_subr
 
 ;  8: Double Fault Exception (With Error Code!)
 isr8:
     cli
-    push byte 8
+    push dword 8
     jmp isr_common_subr
 
 ;  9: Coprocessor Segment Overrun Exception
 isr9:
     cli
-    push byte 0
-    push byte 9
+    push dword 0
+    push dword 9
     jmp isr_common_subr
 
 ; 10: Bad TSS Exception (With Error Code!)
 isr10:
     cli
-    push byte 10
+    push dword 10
     jmp isr_common_subr
 
 ; 11: Segment Not Present Exception (With Error Code!)
 isr11:
     cli
-    push byte 11
+    push dword 11
     jmp isr_common_subr
 
 ; 12: Stack Fault Exception (With Error Code!)
 isr12:
     cli
-    push byte 12
+    push dword 12
     jmp isr_common_subr
 
 ; 13: General Protection Fault Exception (With Error Code!)
 isr13:
     cli
-    push byte 13
+    push dword 13
     jmp isr_common_subr
 
 ; 14: Page Fault Exception (With Error Code!)
 isr14:
     cli
-    push byte 14
+    push dword 14
     jmp isr_common_subr
 
 ; 15: Reserved Exception
 isr15:
     cli
-    push byte 0
-    push byte 15
+    push dword 0
+    push dword 15
     jmp isr_common_subr
 
 ; 16: Floating Point Exception
 isr16:
     cli
-    push byte 0
-    push byte 16
+    push dword 0
+    push dword 16
     jmp isr_common_subr
 
 ; 17: Alignment Check Exception
 isr17:
     cli
-    push byte 0
-    push byte 17
+    push dword 0
+    push dword 17
     jmp isr_common_subr
 
 ; 18: Machine Check Exception
 isr18:
     cli
-    push byte 0
-    push byte 18
+    push dword 0
+    push dword 18
     jmp isr_common_subr
 
 ; 19: Reserved
 isr19:
     cli
-    push byte 0
-    push byte 19
+    push dword 0
+    push dword 19
     jmp isr_common_subr
 
 ; 20: Reserved
 isr20:
     cli
-    push byte 0
-    push byte 20
+    push dword 0
+    push dword 20
     jmp isr_common_subr
 
 ; 21: Reserved
 isr21:
     cli
-    push byte 0
-    push byte 21
+    push dword 0
+    push dword 21
     jmp isr_common_subr
 
 ; 22: Reserved
 isr22:
     cli
-    push byte 0
-    push byte 22
+    push dword 0
+    push dword 22
     jmp isr_common_subr
 
 ; 23: Reserved
 isr23:
     cli
-    push byte 0
-    push byte 23
+    push dword 0
+    push dword 23
     jmp isr_common_subr
 
 ; 24: Reserved
 isr24:
     cli
-    push byte 0
-    push byte 24
+    push dword 0
+    push dword 24
     jmp isr_common_subr
 
 ; 25: Reserved
 isr25:
     cli
-    push byte 0
-    push byte 25
+    push dword 0
+    push dword 25
     jmp isr_common_subr
 
 ; 26: Reserved
 isr26:
     cli
-    push byte 0
-    push byte 26
+    push dword 0
+    push dword 26
     jmp isr_common_subr
 
 ; 27: Reserved
 isr27:
     cli
-    push byte 0
-    push byte 27
+    push dword 0
+    push dword 27
     jmp isr_common_subr
 
 ; 28: Reserved
 isr28:
     cli
-    push byte 0
-    push byte 28
+    push dword 0
+    push dword 28
     jmp isr_common_subr
 
 ; 29: Reserved
 isr29:
     cli
-    push byte 0
-    push byte 29
+    push dword 0
+    push dword 29
     jmp isr_common_subr
 
 ; 30: Reserved
 isr30:
     cli
-    push byte 0
-    push byte 30
+    push dword 0
+    push dword 30
     jmp isr_common_subr
 
 ; 31: Reserved
 isr31:
     cli
-    push byte 0
-    push byte 31
+    push dword 0
+    push dword 31
     jmp isr_common_subr
 
 isr_common_subr:

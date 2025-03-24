@@ -2,8 +2,11 @@
 
 void	kmain(void)
 {
+	kclear();
 	gdt_install();
 	idt_install();
 	isrs_install();
-	kclear();
+	irq_install();
+	timer_install();
+	__asm__ volatile ("sti");
 }

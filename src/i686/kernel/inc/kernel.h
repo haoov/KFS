@@ -15,6 +15,8 @@ struct regs
 	uint32_t	eip, cs, eflags, useresp, ss;
 };
 
+#include "irq.h"
+#include "timer.h"
 #include "isr.h"
 
 #endif

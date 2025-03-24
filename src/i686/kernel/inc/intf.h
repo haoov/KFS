@@ -33,5 +33,6 @@ struct chr
 
 void	kclear(void);
 void	kprint(const char *str);
+void	kprint_hex(uint32_t n);
 
 #endif

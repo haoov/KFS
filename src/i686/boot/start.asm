@@ -7,7 +7,9 @@ bits 32
 start:
 	mov esp, stack_top
 	call kmain
+hlt_loop:
 	hlt
+	jmp hlt_loop
 
 section .bss
 align 4096
