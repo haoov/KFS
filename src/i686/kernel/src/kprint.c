@@ -7,14 +7,6 @@ struct chr	*intf_buffer = (struct chr *) 0xB8000;
 struct scr	scrs[SCR_NUM];
 uint8_t		cur_scr = 0;
 
-void	update_intf(void)
-{
-	struct scr	scr;
-
-	scr = scrs[cur_scr];
-	(void)memcpy(intf_buffer, scr.buffer, SCR_SIZE);
-}
-
 void	update_csr(void)
 {
 	uint16_t	idx;
@@ -28,13 +20,22 @@ void	update_csr(void)
 	outb(0x3D5, idx);
 }
 
-void	clear_row(int r)
+void	update_intf(void)
+{
+	struct scr	scr;
+
+	scr = scrs[cur_scr];
+	(void)memcpy(intf_buffer, scr.buffer, SCR_SIZE * sizeof (struct chr));
+	update_csr();
+}
+
+void	clear_row(int r, uint8_t scr_num)
 {
 	struct chr	empty;
 	struct scr	*scr;
 
-	scr = &scrs[cur_scr];
-	empty.code = 32;
+	scr = &scrs[scr_num];
+	empty.code = ' ';
 	empty.color = scr->color;
 	for (int c = 0; c < COLS_NUM; ++c)
 	{
@@ -43,14 +44,14 @@ void	clear_row(int r)
 	}
 }
 
-void	kclear(void)
+void	kclear(uint8_t scr_num)
 {
 	struct scr	*scr;
 
-	scr = &scrs[cur_scr];
+	scr = &scrs[scr_num];
 	for (int r = 0; r < ROWS_NUM; ++r)
 	{
-		clear_row(r);
+		clear_row(r, scr_num);
 	}
 	scr->col = 0;
 	scr->row = 0;
@@ -88,7 +89,7 @@ void	print_nl(void)
 	else
 	{
 		scroll_down();
-		clear_row(ROWS_NUM - 1);
+		clear_row(ROWS_NUM - 1, cur_scr);
 	}
 	update_csr();
 }
@@ -97,7 +98,7 @@ void	kprint_char(const char c)
 {
 	struct chr	char_s;
 	struct scr	*scr;
-	uint8_t		idx;
+	uint16_t	idx;
 
 	scr = &scrs[cur_scr];
 	idx = SCR_BUF_IDX(scr->col, scr->row);
@@ -169,7 +170,16 @@ void	kprint_hex(uint32_t n)
     kprint(buffer);
 }
 
-void	set_scr_color(uint8_t color)
+void	set_scr_color(uint8_t color, uint8_t scr_num)
 {
-	scrs[cur_scr].color = color;
+	scrs[scr_num].color = color;
+}
+
+void	switch_scr(uint8_t idx)
+{
+	if (idx < 2)
+	{
+		cur_scr = idx;
+		update_intf();
+	}
 }
