@@ -29,12 +29,12 @@ void	update_intf(void)
 	update_csr();
 }
 
-void	clear_row(int r, uint8_t scr_num)
+void	clear_row(int r)
 {
 	struct chr	empty;
 	struct scr	*scr;
 
-	scr = &scrs[scr_num];
+	scr = &scrs[cur_scr];
 	empty.code = ' ';
 	empty.color = scr->color;
 	for (int c = 0; c < COLS_NUM; ++c)
@@ -44,14 +44,14 @@ void	clear_row(int r, uint8_t scr_num)
 	}
 }
 
-void	kclear(uint8_t scr_num)
+void	kclear()
 {
 	struct scr	*scr;
 
-	scr = &scrs[scr_num];
+	scr = &scrs[cur_scr];
 	for (int r = 0; r < ROWS_NUM; ++r)
 	{
-		clear_row(r, scr_num);
+		clear_row(r);
 	}
 	scr->col = 0;
 	scr->row = 0;
@@ -89,7 +89,7 @@ void	print_nl(void)
 	else
 	{
 		scroll_down();
-		clear_row(ROWS_NUM - 1, cur_scr);
+		clear_row(ROWS_NUM - 1);
 	}
 	update_csr();
 }
@@ -170,9 +170,9 @@ void	kprint_hex(uint32_t n)
     kprint(buffer);
 }
 
-void	set_scr_color(uint8_t color, uint8_t scr_num)
+void	set_scr_color(uint8_t color)
 {
-	scrs[scr_num].color = color;
+	scrs[cur_scr].color = color;
 }
 
 void	switch_scr(uint8_t idx)
