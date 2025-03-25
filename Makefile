@@ -30,6 +30,7 @@ KERNEL_LIB		:= $(KERNEL_LIB_DIR)/klib.o
 
 # Compiler
 CC				:= $(ARCH)-elf-gcc
+CFLAGS			:= -fno-builtin -fno-stack-protector -nostdlib -nodefaultlibs
 LINK			:= $(ARCH)-elf-ld
 ASM				:= nasm
 ASMFLAGS		:= -f elf32
@@ -58,11 +59,11 @@ $(KERNEL_LIB): $(KERNEL_LIB_OBJS)
 
 # Compile objects file for the kernel library
 $(KERNEL_LIB_DIR)/src/%.o: $(KERNEL_LIB_DIR)/src/%.c
-	$(CC) -c $< -o $@ -I $(KERNEL_LIB_DIR)/inc
+	$(CC) $(CFLAGS) -c $< -o $@ -I $(KERNEL_LIB_DIR)/inc
 
 # Compile kernel c files
 $(KERNEL_BUILD)/%.o: $(KERNEL_SRC)/%.c | $(KERNEL_BUILD)
-	$(CC) -c $< -o $@ -I $(KERNEL_INC) -I $(KERNEL_LIB_DIR)/inc
+	$(CC) $(CFLAGS) -c $< -o $@ -I $(KERNEL_INC) -I $(KERNEL_LIB_DIR)/inc
 
 # Create directory
 $(ARCH_BUILD) $(ARCH_DIST) $(KERNEL_BUILD):

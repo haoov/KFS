@@ -5,6 +5,8 @@
 
 #define COLS_NUM	80
 #define ROWS_NUM	25
+#define SCR_SIZE	(COLS_NUM * ROWS_NUM)
+#define SCR_NUM		2
 
 #define PCOLOR_BLACK		0x0
 #define PCOLOR_BLUE			0x1
@@ -31,10 +33,19 @@ struct chr
 	uint8_t	color;
 };
 
+struct scr
+{
+	struct chr	buffer[SCR_SIZE];
+	uint8_t		col;
+	uint8_t		row;
+	uint8_t		color;
+};
+
 void	kclear(void);
 void	kprint_char(const char c);
 void	kdel_char(void);
 void	kprint(const char *str);
 void	kprint_hex(uint32_t n);
+void	set_scr_color(uint8_t color);
 
 #endif

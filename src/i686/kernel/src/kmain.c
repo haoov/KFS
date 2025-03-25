@@ -8,7 +8,6 @@
 
 void	kmain(void)
 {
-	kclear();
 	gdt_install();
 	idt_install();
 	isrs_install();
@@ -16,4 +15,7 @@ void	kmain(void)
 	timer_install();
 	kb_install();
 	__asm__ volatile ("sti");
+	set_scr_color(PCOLOR_GREEN | PCOLOR_BLACK << 8);
+	kclear();
+	kprint("A");
 }
