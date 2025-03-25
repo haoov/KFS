@@ -35,7 +35,6 @@ global isr31
 
 ;  0: Divide By Zero Exception
 isr0:
-	mov dword [0xb8000], 0x2f4b2f4f
     cli
     push dword 0
     push dword 0

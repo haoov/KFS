@@ -4,6 +4,8 @@ extern kmain
 section .text
 bits 32
 
+; add multiboot check
+
 start:
 	mov esp, stack_top
 	call kmain
