@@ -1,5 +1,4 @@
 #include "gdt.h"
-#include "intf.h"
 
 struct gdt_entry	gdt[3];
 struct gdt_ptr		gdtp;

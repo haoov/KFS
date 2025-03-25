@@ -1,6 +1,6 @@
 #include "irq.h"
 #include "ports.h"
-#include "intf.h"
+#include "idt.h"
 
 void	*irq_routines[16] =
 {

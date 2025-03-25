@@ -1,4 +1,5 @@
-#include "kernel.h"
+#include "intf.h"
+#include "ports.h"
 
 struct chr	*buf = (struct chr *) 0xB8000;
 uint8_t		col = 0;
@@ -71,7 +72,7 @@ void	print_nl(void)
 	update_csr();
 }
 
-void	print_char(const char c)
+void	kprint_char(const char c)
 {
 	struct chr	char_s;
 	uint16_t	csr_idx;
@@ -93,11 +94,33 @@ void	print_char(const char c)
 	update_csr();
 }
 
+void	kdel_char(void)
+{
+	struct chr	empty;
+
+	empty.code = ' ';
+	empty.color = color;
+	if (!col)
+	{
+		if (row)
+		{
+			--row;
+			col = COLS_NUM - 1;
+		}
+	}
+	else
+	{
+		--col;
+	}
+	buf[SCR_BUF_IDX(col, row)] = empty;
+	update_csr();
+}
+
 void	kprint(const char *str)
 {
 	for (uint32_t i = 0; str[i]; ++i)
 	{
-		print_char(str[i]);
+		kprint_char(str[i]);
 	}
 }
 

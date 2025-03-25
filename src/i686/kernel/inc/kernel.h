@@ -2,10 +2,6 @@
 #define KERNEL_H
 
 #include "klib.h"
-#include "intf.h"
-#include "ports.h"
-#include "gdt.h"
-#include "idt.h"
 
 struct regs
 {
@@ -14,9 +10,5 @@ struct regs
 	uint32_t	int_no, err_code;
 	uint32_t	eip, cs, eflags, useresp, ss;
 };
-
-#include "irq.h"
-#include "timer.h"
-#include "isr.h"
 
 #endif

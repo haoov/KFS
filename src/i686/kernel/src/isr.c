@@ -1,7 +1,8 @@
 #include "isr.h"
 #include "intf.h"
+#include "idt.h"
 
-uint8_t	*except_msg[] =
+char	*except_msg[] =
 {
 	"Division by zero",
 	"Debug",

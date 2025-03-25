@@ -1,5 +1,6 @@
 #include "timer.h"
-#include "intf.h"
+#include "ports.h"
+#include "irq.h"
 
 uint32_t	ticks = 0;
 
@@ -16,10 +17,6 @@ void	timer_phase(int hz)
 void	timer_handler(struct regs *r)
 {
 	++ticks;
-	if (!(ticks % TICK_RATE))
-	{
-		kprint("One second has passed\n");
-	}
 }
 
 void	timer_install(void)

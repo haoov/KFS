@@ -1,4 +1,10 @@
-#include "kernel.h"
+#include "intf.h"
+#include "gdt.h"
+#include "idt.h"
+#include "isr.h"
+#include "irq.h"
+#include "timer.h"
+#include "kb.h"
 
 void	kmain(void)
 {
@@ -8,5 +14,6 @@ void	kmain(void)
 	isrs_install();
 	irq_install();
 	timer_install();
+	kb_install();
 	__asm__ volatile ("sti");
 }

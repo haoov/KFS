@@ -1,7 +1,6 @@
 #ifndef ISR_H
 #define ISR_H
 
-#include "klib.h"
 #include "kernel.h"
 
 extern void	isr0(void);

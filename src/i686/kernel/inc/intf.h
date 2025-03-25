@@ -32,6 +32,8 @@ struct chr
 };
 
 void	kclear(void);
+void	kprint_char(const char c);
+void	kdel_char(void);
 void	kprint(const char *str);
 void	kprint_hex(uint32_t n);
 
