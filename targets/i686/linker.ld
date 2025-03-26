@@ -1,16 +1,40 @@
-ENTRY(start)
+ENTRY(_start)
 
 SECTIONS
 {
-	. = 1M;
+	. = 0x00000800;
+	.gdt : {
+		gdt = .;
+		*(.gdt)
+	}
 
-	.boot :
+	. = 1M;
+	_kernel_start = .;
+
+	.boot ALIGN(4K) :
 	{
 		KEEP(*(.multiboot_header))
 	}
 
-	.text :
+	.text ALIGN(4K) :
 	{
 		*(.text)
 	}
+
+	.rodata ALIGN(4K) :
+	{
+		*(.rodata)
+	}
+
+	.data ALIGN(4K) :
+	{
+		*(.data)
+	}
+
+	.bss ALIGN(4K) :
+	{
+		*(.bss)
+	}
+
+	_kernel_start = .;
 }
