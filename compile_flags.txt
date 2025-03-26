@@ -1,4 +1,0 @@
--I./src/i686/kernel/inc
--I./src/i686/kernel/klib/inc
--m32
--fno-builtin
