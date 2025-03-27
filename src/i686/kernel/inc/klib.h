@@ -9,5 +9,6 @@ typedef unsigned int	uint32_t;
 
 void	*memset(void *ptr, int val, uint32_t size);
 void	*memcpy(void *dst, void *src, uint32_t size);
+void	print_stack(uint32_t depth);
 
 #endif

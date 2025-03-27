@@ -23,4 +23,5 @@ void	kmain(void)
 	kclear();
 	kprint("Screen 2\n");
 	switch_scr(0);
+	print_stack(20);
 }

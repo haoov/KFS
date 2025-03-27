@@ -13,7 +13,7 @@ SECTIONS
 
 	.boot ALIGN(4K) :
 	{
-		KEEP(*(.multiboot_header))
+		KEEP(*(.header))
 	}
 
 	.text ALIGN(4K) :
