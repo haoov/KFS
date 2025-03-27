@@ -29,3 +29,16 @@ uint8_t	inb(uint16_t port)
 
 	return byte;
 }
+
+void	outw(uint16_t port, uint16_t word)
+{
+	__asm__ volatile
+	(
+		".intel_syntax noprefix\n\t"
+		"out %0, %1\n\t"
+		".att_syntax prefix"
+		:
+		: "d" (port), "a" (word)
+		: "memory"
+	);
+}
