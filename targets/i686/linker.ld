@@ -36,5 +36,5 @@ SECTIONS
 		*(.bss)
 	}
 
-	_kernel_start = .;
+	_kernel_end = .;
 }
