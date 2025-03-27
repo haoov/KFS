@@ -19,8 +19,5 @@ void	kmain(void)
 	set_scr_color((PCOLOR_BLACK << 4) | PCOLOR_GREEN);
 	kclear();
 	kprint("Welcome to our KFS project!\n");
-	switch_scr(1);
-	set_scr_color((PCOLOR_BLACK << 4) | PCOLOR_RED);
-	switch_scr(0);
 	ksh_prompt();
 }

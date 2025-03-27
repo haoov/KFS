@@ -149,11 +149,3 @@ void	set_scr_color(uint8_t color)
 	scrs[cur_scr].color = color;
 }
 
-void	switch_scr(uint8_t idx)
-{
-	if (idx < 2)
-	{
-		cur_scr = idx;
-		update_intf();
-	}
-}

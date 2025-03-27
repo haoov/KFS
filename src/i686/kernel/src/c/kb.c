@@ -93,10 +93,6 @@ void	kb_handler(struct regs *r)
 			{
 				input_char(keymap[code + 100]);
 			}
-			else if (mod & ALTM)
-			{
-				switch_scr(keymap[code] - '0' - 1);
-			}
 			else
 			{
 				input_char(keymap[code]);

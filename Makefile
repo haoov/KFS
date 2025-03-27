@@ -36,6 +36,9 @@ ASMFLAGS		:= -f elf32
 	sudo docker build buildenv -t kfs-buildenv
 	sudo docker run --rm -v .:/root/KFS kfs-buildenv make $(TARGET) ARCH=$(ARCH)
 
+run:
+	kvm $(ARCH_DIST)/$(TARGET)
+
 # Create the iso file with grub installed
 $(TARGET): $(KERNEL)
 	@mkdir -p $(ARCH_DIST)
