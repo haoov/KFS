@@ -1,4 +1,4 @@
-global start
+global _start
 extern kmain
 
 section .text
@@ -6,7 +6,7 @@ bits 32
 
 ; add multiboot check
 
-start:
+_start:
 	mov esp, stack_top
 	call kmain
 hlt_loop:

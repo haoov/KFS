@@ -6,7 +6,7 @@
 #define COLS_NUM	80
 #define ROWS_NUM	25
 #define SCR_SIZE	(COLS_NUM * ROWS_NUM)
-#define SCR_NUM		2
+#define SCR_NUM		1
 
 #define PCOLOR_BLACK		0x0
 #define PCOLOR_BLUE			0x1
