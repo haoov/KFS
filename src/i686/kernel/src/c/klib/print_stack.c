@@ -20,7 +20,7 @@ void	print_esp(uint32_t *esp, uint32_t depth)
 {
 	kprint("\n");
 	kprint("Stack trace:\n");
-	for (uint32_t i = 0; i < depth && esp + i >= stack_bottom; ++i)
+	for (uint32_t i = 0; i < depth; ++i)
 	{
 		kprint("[esp + ");
 		kprint_hex(i);
