@@ -5,6 +5,7 @@
 #include "irq.h"
 #include "timer.h"
 #include "kb.h"
+#include "ksh.h"
 
 void	kmain(void)
 {
@@ -20,8 +21,6 @@ void	kmain(void)
 	kprint("Welcome to our KFS project!\n");
 	switch_scr(1);
 	set_scr_color((PCOLOR_BLACK << 4) | PCOLOR_RED);
-	kclear();
-	kprint("Screen 2\n");
 	switch_scr(0);
-	print_stack(20);
+	ksh_prompt();
 }

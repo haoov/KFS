@@ -13,6 +13,9 @@
 #define ALTM	0x8
 #define OPTM	0x10
 
+#define NEWLINE	'\n'
+#define BACKSPC	'\b'
+
 #define IS_MOD(c)	(c == CTRL || c == RSHIFT || c == LSHIFT || \
 					c == ALT || c == OPT) 
 

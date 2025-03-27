@@ -30,10 +30,10 @@ void	print_esp(uint32_t *esp, uint32_t depth)
 	}
 }
 
-void	print_stack(uint32_t depth)
+void	print_stack(void)
 {
 	uint32_t	*esp = NULL;
 
 	esp = get_esp();
-	print_esp(esp, depth);
+	print_esp(esp, 20);
 }
