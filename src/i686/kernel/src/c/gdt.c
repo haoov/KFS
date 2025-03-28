@@ -27,8 +27,6 @@ void	gdt_install(void)
 	gdtp.limit = (sizeof (struct gdt_entry) * 7) - 1;
 	gdtp.base = (uint32_t)&gdt;
 
-	kprint_hex(gdtp.base);
-
 	gdt_set_gate(0, 0, 0, 0, 0);
 
 	// Kernel code segment

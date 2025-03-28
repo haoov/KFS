@@ -45,9 +45,7 @@ struct scr
 void	kclear();
 void	kprint_char(const char c);
 void	kdel_char(void);
-void	kprint(const char *str);
-void	kprint_hex(uint32_t n);
+void	kprint(const char *fmt, ...);
 void	set_scr_color(uint8_t color);
-void	switch_scr(uint8_t idx);
 
 #endif
