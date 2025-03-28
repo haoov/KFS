@@ -8,6 +8,7 @@
 extern struct gdt_ptr	gdtp;
 extern struct idt_ptr	idtp;
 extern uint32_t			kernel_start;
+extern uint32_t			kernel_end;
 
 struct cmd	cmds[] =
 {
@@ -88,4 +89,6 @@ void	meminfos(void)
 	kprint("gdt physical address: %x\n", gdtp.base);
 	kprint("idt physical address: %x\n", idtp.base);
 	kprint("kernel start address: %x\n", &kernel_start);
+	kprint("kernel end address:   %x\n", &kernel_end);
+	kprint("kernel size:          %d\n", &kernel_end - &kernel_start);
 }

@@ -56,7 +56,7 @@ $(ARCH_BUILD)/%.o: $(ARCH_SRC)/%.asm
 # Compile kernel c files
 $(KERNEL_BUILD)/%.o: $(KERNEL_SRC)/%.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@ -I $(KERNEL_INC) -I $(KERNEL_LIB_DIR)/inc
+	$(CC) $(CFLAGS) -c $< -o $@ -I $(KERNEL_INC) -I $(KERNEL_INC)/memory
 
 clean:
 	rm -rf $(BUILD_DIR)

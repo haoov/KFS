@@ -6,16 +6,12 @@
 #include "timer.h"
 #include "kb.h"
 #include "ksh.h"
+#include "boot.h"
 
-void	kmain(void)
+extern uint32_t kernel_start;
+
+void	entry_msg()
 {
-	gdt_install();
-	idt_install();
-	isrs_install();
-	irq_install();
-	timer_install();
-	kb_install();
-	__asm__ volatile ("sti");
 	set_scr_color((PCOLOR_BLACK << 4) | PCOLOR_GREEN);
 	kclear();
 	kprint("      _                    ____   _____ \n");
@@ -26,5 +22,17 @@ void	kmain(void)
 	kprint(" \\____/ \\__,_|_|  \\__,_|  \\____/|_____/ \n");
 	system_infos();
 	kprint_char(NEWLINE);
+}
+
+void	kmain(struct mb_inf mb_inf)
+{
+	gdt_install();
+	idt_install();
+	isrs_install();
+	irq_install();
+	timer_install();
+	kb_install();
+	__asm__ volatile ("sti");
+	entry_msg();
 	ksh_prompt();
 }
