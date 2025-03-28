@@ -2,13 +2,19 @@
 #include "intf.h"
 #include "kb.h"
 #include "ports.h"
+#include "gdt.h"
+#include "idt.h"
+
+extern struct gdt_ptr	gdtp;
+extern struct idt_ptr	idtp;
+extern uint32_t			kernel_start;
 
 struct cmd	cmds[] =
 {
 	{"help", ksh_help}, {"pstack", print_stack},
 	{"clear", kclear}, {"sysinfos", system_infos},
 	{"reboot", kernel_reboot}, {"shutdown", shutdown},
-	{"hlt", halt},
+	{"hlt", halt}, {"meminfos", meminfos},
 	{NULL, NULL}
 };
 
@@ -31,9 +37,7 @@ void	ksh_cmd(char *line)
 	}
 	if (!cmds[i].name && line[0])
 	{
-		kprint("Command not found ");
-		kprint(line);
-		kprint_char(NEWLINE);
+		kprint("command not found: %s\n", line);
 	}
 }
 
@@ -47,6 +51,7 @@ void	ksh_help(void)
 	kprint("- pstack     print 20 entries from top of the stack\n");
 	kprint("- clear      clear the screen\n");
 	kprint("- sysinfos   print system informations\n");
+	kprint("- meminfos   print system memory layout\n");
 }
 
 void	system_infos(void)
@@ -76,4 +81,11 @@ void	halt(void)
 		"cli\n\t"
 		"hlt"
 	);
+}
+
+void	meminfos(void)
+{
+	kprint("gdt physical address: %x\n", gdtp.base);
+	kprint("idt physical address: %x\n", idtp.base);
+	kprint("kernel start address: %x\n", &kernel_start);
 }

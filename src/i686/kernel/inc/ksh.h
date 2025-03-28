@@ -18,5 +18,6 @@ void	system_infos();
 void	kernel_reboot();
 void	shutdown(void);
 void	halt(void);
+void	meminfos(void);
 
 #endif

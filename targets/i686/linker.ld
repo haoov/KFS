@@ -8,8 +8,8 @@ SECTIONS
 		*(.gdt)
 	}
 
-	. = 1M;
-	_kernel_start = .;
+	. = 0x100000;
+	kernel_start = .;
 
 	.boot ALIGN(4K) :
 	{

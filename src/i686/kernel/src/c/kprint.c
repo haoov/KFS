@@ -68,10 +68,10 @@ void	kprint(const char *fmt, ...)
 			{
 				case 'c':
 					kprint_char(*(char*)args);
-					args += sizeof (char);
+					args += sizeof (int);
 					break;
 				case 's':
-					kprint_str((char*)args);
+					kprint_str(*(char**)args);
 					args += sizeof (char*);
 					break;
 				case 'd':
