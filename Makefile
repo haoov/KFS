@@ -18,11 +18,11 @@ KERNEL_INC		:= $(ARCH_SRC)/kernel/inc
 # Files
 LINKER			:= $(ARCH_TARGET)/linker.ld
 ASM_SRCS		:= $(shell find $(ARCH_SRC) -name "*.asm")
-ASM_OBJS		:= $(patsubst $(ARCH_SRC)/%.asm,$(ARCH_BUILD)/%.o,$(ASM_SRCS))
+ASM_OBJS		:= $(patsubst $(ARCH_SRC)/%.asm,$(ARCH_BUILD)/%.asm.o,$(ASM_SRCS))
 KERNEL			:= $(ARCH_TARGET)/iso/boot/kernel.bin
 
 KERNEL_SRCS		:= $(shell find $(KERNEL_SRC) -name "*.c")
-KERNEL_OBJS		:= $(patsubst $(KERNEL_SRC)/%.c,$(KERNEL_BUILD)/%.o,$(KERNEL_SRCS))
+KERNEL_OBJS		:= $(patsubst $(KERNEL_SRC)/%.c,$(KERNEL_BUILD)/%.c.o,$(KERNEL_SRCS))
 
 # Compiler
 CC				:= $(ARCH)-elf-gcc
@@ -49,19 +49,18 @@ $(KERNEL): $(ASM_OBJS) $(KERNEL_OBJS)
 	$(LINK) -n -o $@ -T $(LINKER) $(ASM_OBJS) $(KERNEL_OBJS) $(KERNEL_LIB)
 
 # Assemble each asm file
-$(ARCH_BUILD)/%.o: $(ARCH_SRC)/%.asm
+$(ARCH_BUILD)/%.asm.o: $(ARCH_SRC)/%.asm
 	@mkdir -p $(dir $@)
 	$(ASM) $(ASMFLAGS) $< -o $@
 
 # Compile kernel c files
-$(KERNEL_BUILD)/%.o: $(KERNEL_SRC)/%.c
+$(KERNEL_BUILD)/%.c.o: $(KERNEL_SRC)/%.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@ -I $(KERNEL_INC) -I $(KERNEL_INC)/memory
+	$(CC) $(CFLAGS) -c $< -o $@ -I $(KERNEL_INC)
 
 clean:
 	rm -rf $(BUILD_DIR)
 	rm -rf $(KERNEL)
-	rm -rf $(KERNEL_LIB)
 
 fclean: clean
 	rm -rf $(DIST_DIR)

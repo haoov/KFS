@@ -7,6 +7,7 @@
 #include "kb.h"
 #include "ksh.h"
 #include "boot.h"
+#include "vmm.h"
 
 extern uint32_t kernel_start;
 
@@ -24,7 +25,7 @@ void	entry_msg()
 	kprint_char(NEWLINE);
 }
 
-void	kmain(struct mb_inf mb_inf)
+void	kmain(mb_inf_t *mb_inf)
 {
 	gdt_install();
 	idt_install();
@@ -35,4 +36,5 @@ void	kmain(struct mb_inf mb_inf)
 	__asm__ volatile ("sti");
 	entry_msg();
 	ksh_prompt();
+	vmm_init();
 }
