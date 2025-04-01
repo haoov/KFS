@@ -8,6 +8,7 @@
 #include "ksh.h"
 #include "boot.h"
 #include "vmm.h"
+#include "pmm.h"
 
 extern uint32_t kernel_start;
 
@@ -36,5 +37,6 @@ void	kmain(mb_inf_t *mb_inf)
 	__asm__ volatile ("sti");
 	entry_msg();
 	ksh_prompt();
+	pmm_init((mmap_ent_t *)mb_inf->mmap_addr, mb_inf->mmap_length);
 	vmm_init();
 }
