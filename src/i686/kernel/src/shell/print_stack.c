@@ -18,15 +18,10 @@ uint32_t	*get_esp()
 
 void	print_esp(uint32_t *esp, uint32_t depth)
 {
-	kprint("\n");
 	kprint("Stack trace:\n");
 	for (uint32_t i = 0; i < depth; ++i)
 	{
-		kprint("[esp + ");
-		kprint_hex(i);
-		kprint("]: ");
-		kprint_hex(esp[i]);
-		kprint("\n");
+		kprint("[esp+%d]: %x\n", i, esp[i]);
 	}
 }
 

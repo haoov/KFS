@@ -1,20 +1,23 @@
-global _start
-extern kmain
-
-section .text
-bits 32
-
-; add multiboot check
-
+SECTION .boot
+EXTERN kmain
+EXTERN setup_paging
+GLOBAL _start
 _start:
-	mov esp, stack_top
-	call kmain
-hlt_loop:
-	hlt
-	jmp hlt_loop
+	CALL setup_paging
+	JMP higher_half
 
-section .bss
-align 4096
+SECTION .text
+higher_half:
+	MOV esp, stack_top
+	PUSH ebx
+	CALL kmain
+
+hlt_loop:
+	HLT
+	JMP hlt_loop
+
+SECTION .bss
+ALIGN 4096
 stack_bottom:
-	resb	4096 * 4
+	RESB	4096 * 4
 stack_top:

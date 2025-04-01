@@ -2,7 +2,7 @@
 #include "ports.h"
 #include "klib.h"
 
-struct chr	*intf_buffer = (struct chr *) 0xB8000;
+struct chr	*intf_buffer = (struct chr *) 0xC00B8000;
 
 struct scr	scrs[SCR_NUM];
 uint8_t		cur_scr = 0;
