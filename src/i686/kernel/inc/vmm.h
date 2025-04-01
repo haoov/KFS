@@ -3,7 +3,7 @@
 
 #include "klib.h"
 
-#define KERNEL_START 0xC0000000
+#define KERNEL_VIRT_BASE_ADDR 0xC0000000
 
 #define PAGE_SIZE	4096
 #define ENT_SIZE	1024

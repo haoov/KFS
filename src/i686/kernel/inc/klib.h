@@ -11,6 +11,8 @@ typedef uint8_t			bool;
 #define true	1
 #define false	0
 
+#define CEIL_DIV(a, b) ((a + (b - 1)) / b)
+
 void		*memset(void *ptr, int val, uint32_t size);
 void		*memcpy(void *dst, void *src, uint32_t size);
 void		print_stack(void);

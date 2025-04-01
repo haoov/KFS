@@ -90,5 +90,4 @@ void	meminfos(void)
 	kprint("idt physical address: %x\n", idtp.base);
 	kprint("kernel start address: %x\n", &kernel_start);
 	kprint("kernel end address:   %x\n", &kernel_end);
-	kprint("kernel size:          %d\n", &kernel_end - &kernel_start);
 }

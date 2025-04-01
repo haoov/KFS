@@ -33,7 +33,7 @@ typedef struct mmap_ent {
 	uint32_t	type;
 } mmap_ent_t __attribute__ ((packed));
 
-#define MMAP_TYPE_AVAILABE	1
+#define MMAP_TYPE_AVAILABLE	1
 #define MMAP_TYPE_ACPI		3
 #define MMAP_TYPE_RESERVED	4
 #define MMAP_TYPE_DEF_RAM	5
