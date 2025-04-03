@@ -20,7 +20,7 @@ void	clear_bit(uint32_t bit) {
 }
 
 bool	test_bit(uint32_t bit) {
-	return (bitmap[bit / 32] & (1 << (bit % 32)));
+	return 1 & (bitmap[bit / 32] >> (bit % 32));
 }
 
 uint32_t get_free_pages(uint32_t n) {
@@ -30,10 +30,10 @@ uint32_t get_free_pages(uint32_t n) {
 	for (uint32_t i = 0; i < total_pages; ++i) {
 		while (!test_bit(i)) {
 			++count;
-			if (count == n) {
-				return i;
-			}
 			++i;
+			if (count == n) {
+				return i - count;
+			}
 		}
 		count = 0;
 	}
@@ -51,12 +51,11 @@ void	*pmm_alloc_pages(uint32_t n) {
 	if (pg_idx == (uint32_t)-1) {
 		return NULL;
 	}
-	for (uint32_t pg = pg_idx; pg < n; ++pg) {
+	for (uint32_t pg = pg_idx; pg < pg_idx + n; ++pg) {
 		set_bit(pg);
 		--free_pages;
 	}
 
-	kprint("free pages: %d\n", free_pages);
 	return PG_IDX_TO_ADDR(pg_idx);
 }
 
@@ -68,15 +67,13 @@ void	pmm_free_pages(void *addr, uint32_t n) {
 		return;
 	}
 
-	for (uint32_t pg = pg_idx; pg < n; ++pg) {
-		if (!test_bit(pg)) {
-			kprint("Freeing page\n");
+	for (uint32_t pg = pg_idx; pg < pg_idx + n; ++pg) {
+		if (test_bit(pg)) {
 			clear_bit(pg);
 			++free_pages;
 		}
 	}
 
-	kprint("free pages: %d\n", free_pages);
 }
 
 void	bitmap_init(mmap_ent_t *mmap, uint32_t mmap_len) {
@@ -141,14 +138,14 @@ void	bitmap_init(mmap_ent_t *mmap, uint32_t mmap_len) {
 
 	// Finally set bitmap and kernel as used
 	pkernel_start = (uint32_t)&kernel_start - KERNEL_VIRT_BASE_ADDR;
-	uint32_t kernel_pg_start, kernel_pg_end, bitmap_pg_start, bitmap_pg_end;
+	uint32_t kernel_pg_end, bitmap_pg_start, bitmap_pg_end;
 
-	kernel_pg_start = ADDR_TO_PG_IDX(pkernel_start);
 	kernel_pg_end = ADDR_TO_PG_IDX(pkernel_end);
 	bitmap_pg_start = ADDR_TO_PG_IDX((uint32_t)bitmap);
 	bitmap_pg_end = CEIL_DIV((uint32_t)bitmap + bm_size, PAGE_SIZE);
 
-	for (uint32_t pg = kernel_pg_start; pg < kernel_pg_end; ++pg) {
+	// Ser from address 0 to the kernel as used
+	for (uint32_t pg = 0; pg < kernel_pg_end; ++pg) {
 		set_bit(pg);
 		--free_pages;
 	}
@@ -156,6 +153,7 @@ void	bitmap_init(mmap_ent_t *mmap, uint32_t mmap_len) {
 		set_bit(pg);
 		--free_pages;
 	}
+
 }
 
 void	pmm_init(mmap_ent_t *mmap, uint32_t mmap_len) {
@@ -179,5 +177,4 @@ void	pmm_init(mmap_ent_t *mmap, uint32_t mmap_len) {
 
 	total_pages = addr_max / PAGE_SIZE;
 	bitmap_init(mmap, mmap_len);
-	kprint("free pages: %d\n", free_pages);
 }

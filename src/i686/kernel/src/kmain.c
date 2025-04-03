@@ -39,10 +39,10 @@ void	kmain(mb_inf_t *mb_inf)
 	ksh_prompt();
 	pmm_init((mmap_ent_t *)mb_inf->mmap_addr, mb_inf->mmap_length);
 	vmm_init();
-	void *addr = pmm_alloc_pages(3);
-	kprint("3 Pages allocated at addr: %x\n", (uint32_t)addr);
-	void *addr2 = pmm_alloc_pages(5);
-	kprint("5 Pages allocated at addr: %x\n", (uint32_t)addr);
-	pmm_free_pages(addr, 3);
-	pmm_free_pages(addr, 5);
+	void *addr = pmm_alloc_pages(1);
+	kprint("1 page allocated at address: %x\n", addr);
+	void *vaddr = vmm_map_page(addr, VMM_ENT_WRITE);
+	kprint("1 page mapped at virtual address: %x\n", vaddr);
+	vmm_umap_page(vaddr);
+	pmm_free_pages(addr, 1);
 }
