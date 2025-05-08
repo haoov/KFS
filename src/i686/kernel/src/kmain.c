@@ -40,5 +40,7 @@ void	kmain(mb_inf_t *mb_inf)
 	pmm_init((mmap_ent_t *)mb_inf->mmap_addr, mb_inf->mmap_length);
 	vmm_init();
 	kmem_init();
+	void *addr = kmalloc(8);
+	kfree(addr);
 	ksh_prompt();
 }
