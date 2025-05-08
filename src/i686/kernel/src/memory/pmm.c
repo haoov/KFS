@@ -81,7 +81,7 @@ void	bitmap_init(mmap_ent_t *mmap, uint32_t mmap_len) {
 	uint32_t	bm_len, bm_size, pkernel_end, pkernel_start;
 
 	// First find suitable location for bitmap
-	// Get kernel end physicall address
+	// Get kernel end physical address
 	pkernel_end = (uint32_t)&kernel_end - KERNEL_VIRT_BASE_ADDR;
 	// Compute the size of the bitmap
 	bm_len = (total_pages / 32) + (total_pages % 32 ? 1 : 0);
@@ -140,11 +140,11 @@ void	bitmap_init(mmap_ent_t *mmap, uint32_t mmap_len) {
 	pkernel_start = (uint32_t)&kernel_start - KERNEL_VIRT_BASE_ADDR;
 	uint32_t kernel_pg_end, bitmap_pg_start, bitmap_pg_end;
 
-	kernel_pg_end = ADDR_TO_PG_IDX(pkernel_end);
+	kernel_pg_end = CEIL_DIV(pkernel_end, PAGE_SIZE);
 	bitmap_pg_start = ADDR_TO_PG_IDX((uint32_t)bitmap);
 	bitmap_pg_end = CEIL_DIV((uint32_t)bitmap + bm_size, PAGE_SIZE);
 
-	// Ser from address 0 to the kernel as used
+	// Set from address 0 to the kernel as used
 	for (uint32_t pg = 0; pg < kernel_pg_end; ++pg) {
 		set_bit(pg);
 		--free_pages;
