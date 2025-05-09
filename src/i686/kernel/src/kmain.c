@@ -41,6 +41,10 @@ void	kmain(mb_inf_t *mb_inf)
 	vmm_init();
 	kmem_init();
 	void *addr = kmalloc(8);
+	void *addr2 = kmalloc(107);
+	void *addr3 = kmalloc(7);
 	kfree(addr);
+	kfree(addr2);
+	kfree(addr3);
 	ksh_prompt();
 }

@@ -27,6 +27,16 @@ void	*kmem_alloc_page(void) {
 }
 
 void kmem_free_page(void *addr) {
+	uint32_t *pte;
+	void *paddr;
+
+	// Get page table entry
+	pte = PTE_VADDR(PDIR_IDX(addr), PTAB_IDX(addr));
+	// Removing flags to get the physical address
+	paddr = (void*)(*pte & 0xFFFFF000);
+
+	pmm_free_pages(paddr, 1);
+	vmm_umap_page(addr);
 }
 
 /* Allocate and set cache chain
@@ -48,8 +58,6 @@ void	init_chache_chain(void) {
 		next += size;
 	}
 	cache->next = NULL;
-
-	cache = cache_chain;
 
 	free_cache = cache_chain;
 }
@@ -102,7 +110,6 @@ kmem_slab_t *add_slab(kmem_cache_t *cache) {
 void remove_slab(kmem_slab_t *slab, kmem_cache_t *cache) {
 	kmem_slab_t *cur, *prev;
 	void *paddr;
-	kprint("removing slab\n");
 
 	cur = cache->slabs;
 	if (cur == slab) {
@@ -129,7 +136,6 @@ kmem_cache_t	*create_cache(uint32_t obj_size) {
 	cache->obj_size = obj_size;
 	cache->page_per_slab = 1;
 	cache->slabs = NULL;
-	if (!cache->slabs) return NULL;
 
 	free_cache = free_cache->next;
 
@@ -143,6 +149,7 @@ kmem_cache_t *get_cache(uint32_t size) {
 		if (cache->obj_size >= size) {
 			return cache;
 		}
+		cache = cache->next;
 	}
 
 	return NULL;
@@ -158,6 +165,7 @@ kmem_slab_t *get_slab(kmem_cache_t *cache) {
 		if (slab->free_obj) {
 			return slab;
 		}
+		slab = slab->next;
 	}
 
 	slab = add_slab(cache);
@@ -257,4 +265,11 @@ void	kmem_init(void) {
 	create_cache(4);
 	create_cache(8);
 	create_cache(16);
+	create_cache(32);
+	create_cache(64);
+	create_cache(128);
+	create_cache(256);
+	create_cache(512);
+	create_cache(1024);
+	create_cache(2048);
 }
