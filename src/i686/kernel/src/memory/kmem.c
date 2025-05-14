@@ -260,6 +260,24 @@ void kfree(void *addr) {
 	}
 }
 
+/* Return the size in memory of the variable at address <addr>
+ * */
+uint32_t kmem_get_size(void *addr) {
+	kmem_cache_t *cache;
+	kmem_slab_t *slab;
+
+	// Find slab containing address
+	cache = cache_chain;
+	while (cache) {
+		slab = find_slab(cache, addr);
+		if (slab) break;
+		cache = cache->next;
+	}
+	if (!cache) return 0;
+	
+	return cache->obj_size;
+}
+
 void	kmem_init(void) {
 	init_chache_chain();
 	create_cache(4);

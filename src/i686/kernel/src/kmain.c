@@ -42,9 +42,10 @@ void	kmain(mb_inf_t *mb_inf)
 	kmem_init();
 	void *addr = kmalloc(8);
 	void *addr2 = kmalloc(107);
-	void *addr3 = kmalloc(7);
+	kprint_char(NEWLINE);
+	kprint("object 1 size: %d\n", kmem_get_size(addr));
+	kprint("object 2 size: %d\n", kmem_get_size(addr2));
 	kfree(addr);
 	kfree(addr2);
-	kfree(addr3);
 	ksh_prompt();
 }

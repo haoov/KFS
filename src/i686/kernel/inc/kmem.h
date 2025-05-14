@@ -25,5 +25,6 @@ typedef struct kmem_cache {
 void kmem_init(void);
 void *kmalloc(uint32_t size);
 void kfree(void *addr);
+uint32_t kmem_get_size(void *addr);
 
 #endif
