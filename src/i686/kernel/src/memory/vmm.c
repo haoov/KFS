@@ -20,14 +20,14 @@ bool	test_alloc_bit(uint32_t bit) {
 
 void	invalidate_page(uint32_t vaddr)
 {
-	__asm__ volatile("invlpg %0" :: "m"(vaddr));
+	__asm__ volatile("invlpg (%0)" :: "r"(vaddr) : "memory");
 }
 
 void	invalidate_pde(uint32_t pdi) {
 	uint32_t vaddr;
 
 	for (uint32_t pti = 0; pti < 1024; ++pti) {
-		vaddr = pdi << 22 | pti << 12;
+		vaddr = (uint32_t)VADDR(pdi, pti);
 		invalidate_page(vaddr);
 	}
 }
@@ -37,7 +37,6 @@ void	vmm_init(void) {
 	page_dir[1023] = (uint32_t)page_dir - KERNEL_VIRT_BASE_ADDR;
 	page_dir[1023] += VMM_ENT_WRITE | VMM_ENT_PRESENT;
 
-	// Unmapping the first entry and updating the TLB
 	page_dir[0] = 0;
 	invalidate_pde(0);
 

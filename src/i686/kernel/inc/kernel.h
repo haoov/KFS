@@ -11,4 +11,6 @@ struct regs
 	uint32_t	eip, cs, eflags, useresp, ss;
 };
 
+void __attribute__((noreturn)) halt_cpu(void);
+
 #endif

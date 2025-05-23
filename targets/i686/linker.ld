@@ -6,6 +6,9 @@ ENTRY(_start)
 
 SECTIONS
 {
+	/* FIX: To remove identity mapping either remove this or start mapping at
+	 * 0x000100000
+	 * */
 	. = GDT_PHYSICAL_ADDR;
 	.gdt : {
 		gdt = .;

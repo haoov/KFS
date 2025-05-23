@@ -33,19 +33,10 @@ void	kmain(mb_inf_t *mb_inf)
 	idt_install();
 	isrs_install();
 	irq_install();
-	timer_install();
 	kb_install();
 	__asm__ volatile ("sti");
 	entry_msg();
 	pmm_init((mmap_ent_t *)mb_inf->mmap_addr, mb_inf->mmap_length);
 	vmm_init();
-	kmem_init();
-	void *addr = kmalloc(8);
-	void *addr2 = kmalloc(107);
-	kprint_char(NEWLINE);
-	kprint("object 1 size: %d\n", kmem_get_size(addr));
-	kprint("object 2 size: %d\n", kmem_get_size(addr2));
-	kfree(addr);
-	kfree(addr2);
 	ksh_prompt();
 }
