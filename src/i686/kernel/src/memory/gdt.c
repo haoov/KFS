@@ -1,13 +1,8 @@
 #include "gdt.h"
 
-/* WARNING: If gdt physical address is removed in linker.ld
- * then remove the section attributes
- * */
-__attribute__((section(".gdt")))
 __attribute__((aligned(4)))
 struct gdt_entry	gdt[7];
 
-__attribute__((section(".gdt")))
 __attribute__((aligned(4)))
 struct gdt_ptr		gdtp;
 

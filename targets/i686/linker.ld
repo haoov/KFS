@@ -1,4 +1,3 @@
-GDT_PHYSICAL_ADDR = 0x00000800;
 KERNEL_PHYSICAL_BASE_ADDR = 1M;
 KERNEL_VIRTUAL_BASE_ADDR = 0xC0000000;
 
@@ -6,15 +5,6 @@ ENTRY(_start)
 
 SECTIONS
 {
-	/* FIX: To remove identity mapping either remove this or start mapping at
-	 * 0x000100000
-	 * */
-	. = GDT_PHYSICAL_ADDR;
-	.gdt : {
-		gdt = .;
-		*(.gdt)
-	}
-
 	. = KERNEL_PHYSICAL_BASE_ADDR;
 
 	.header ALIGN(4K) :
