@@ -13,8 +13,7 @@
 
 extern uint32_t kernel_start;
 
-void	entry_msg()
-{
+void	entry_msg() {
 	set_scr_color((PCOLOR_BLACK << 4) | PCOLOR_GREEN);
 	kclear();
 	kprint("      _                    ____   _____ \n");
@@ -27,8 +26,7 @@ void	entry_msg()
 	kprint_char(NEWLINE);
 }
 
-void	kmain(mb_inf_t *mb_inf)
-{
+void	kmain(mb_inf_t *mb_inf) {
 	gdt_install();
 	idt_install();
 	isrs_install();
@@ -38,5 +36,8 @@ void	kmain(mb_inf_t *mb_inf)
 	entry_msg();
 	pmm_init((mmap_ent_t *)mb_inf->mmap_addr, mb_inf->mmap_length);
 	vmm_init();
+	kmem_init();
+	void *addr = kmalloc(24);
+	kfree(addr);
 	ksh_prompt();
 }

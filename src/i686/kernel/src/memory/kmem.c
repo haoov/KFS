@@ -83,6 +83,7 @@ kmem_slab_t	*create_slab(kmem_cache_t *cache) {
 	}
 	obj->next_free = NULL;
 
+	kprint("slab created at addr: %x\n", slab);
 	return slab;
 }
 
@@ -221,7 +222,7 @@ kmem_slab_t *find_slab(kmem_cache_t *cache, void *addr) {
 /* Set given address as free object
  * */
 void kfree(void *addr) {
-	kprint("\nFREEING MEMORY: %x\n", addr);
+	kprint("\nFREEING MEMORY AT ADDR %x\n", addr);
 	kmem_cache_t *cache;
 	kmem_slab_t *slab = NULL;
 	slab_obj_t *obj;

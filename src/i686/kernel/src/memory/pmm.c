@@ -153,6 +153,7 @@ void	bitmap_init(mmap_ent_t *mmap, uint32_t mmap_len) {
 		set_bit(pg);
 		--free_pages;
 	}
+	bitmap = (uint32_t*)((uint32_t)bitmap + KERNEL_VIRT_BASE_ADDR);
 
 }
 
