@@ -1,6 +1,43 @@
 #include "isr.h"
 #include "intf.h"
 #include "idt.h"
+#include "vmm.h"
+#include "kernel.h"
+
+char	*except_msg[] =
+{
+	"Division by zero",
+	"Debug",
+	"Non Maskable Interrupt",
+	"Breakpoint",
+	"Into Detected Overflow",
+	"Out of Bounds",
+	"Invalid Opcode",
+	"No Coprocessor",
+	"Double Fault",
+	"Coprocessor Segment Overrun",
+	"Bad TSS",
+	"Segment Not Present",
+	"Stack Fault",
+	"General Protection Fault",
+	"Page Fault",
+	"Unknown Interrupt",
+	"Coprocessor Fault",
+	"Alignment Check",
+	"Machine Check",
+	"Reserved",
+	"Reserved",
+	"Reserved",
+	"Reserved",
+	"Reserved",
+	"Reserved",
+	"Reserved",
+	"Reserved",
+	"Reserved",
+	"Reserved",
+	"Reserved",
+	"Reserved"
+};
 
 uint32_t	isr_subs[32] =
 {
@@ -44,4 +81,27 @@ void	isrs_install(void)
 	{
 		idt_set_entry(i, isr_subs[i], 0x08, 0x8E);
 	}
+}
+
+void page_fault_handler(struct regs *r) {
+	uint32_t fault_addr;
+
+	asm volatile ("mov %%cr2, %0" : "=r" (fault_addr));
+	if (vmm_handle_page_fault(fault_addr, r->err_code)) {
+		return;
+	}
+
+	kernel_panic("Invalid memory access", r);
+}
+
+void fault_handler(struct regs *r) {
+	if (r->int_no < 32) {
+		if (r->int_no == 14) {
+			page_fault_handler(r);
+			return;
+		}
+
+		kernel_panic(except_msg[r->int_no], r);
+	}
+
 }

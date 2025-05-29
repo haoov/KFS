@@ -12,5 +12,6 @@ struct regs
 };
 
 void __attribute__((noreturn)) halt_cpu(void);
+void  kernel_panic(const char *msg, struct regs *regs);
 
 #endif

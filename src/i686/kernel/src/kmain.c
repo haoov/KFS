@@ -36,8 +36,9 @@ void	kmain(mb_inf_t *mb_inf) {
 	entry_msg();
 	pmm_init((mmap_ent_t *)mb_inf->mmap_addr, mb_inf->mmap_length);
 	vmm_init();
-	kmem_init();
-	void *addr = kmalloc(24);
-	kfree(addr);
+	int *test = vmm_reserve_range(sizeof(int*), VMM_ENT_WRITE);
+	kprint("Virtual address reserved at: %x\n", test);
+	*test = 5;
+	kprint("test value: %d\n", *test);
 	ksh_prompt();
 }

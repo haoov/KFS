@@ -25,8 +25,19 @@
 #define PDE_VADDR(i) (void*)(PD_VADDR + (i * 4))
 #define PTE_VADDR(di, ti) (void*)(FPT_VADDR + (di * 0x1000) + (ti * 4))
 
-void	vmm_init(void);
-void	*vmm_map_page(void *paddr, uint32_t flags);
-void	vmm_umap_page(void *vaddr);
+#define VMA_MAX_ENTRIES 1024
+
+typedef struct vma_region {
+	uint32_t start;
+	uint32_t end;
+	uint32_t flags;
+	struct vma_region *next;
+} vma_region_t;
+
+void vmm_init(void);
+void *vmm_map_page(void *paddr, uint32_t flags);
+void vmm_umap_page(void *vaddr);
+bool vmm_handle_page_fault(uint32_t fault_addr, uint32_t err_code);
+void *vmm_reserve_range(uint32_t size, uint32_t flags);
 
 #endif // VMM_H

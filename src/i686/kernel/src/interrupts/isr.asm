@@ -1,4 +1,4 @@
-extern kernel_panic
+extern fault_handler
 global isr_common_subr
 global isr0
 global isr1
@@ -264,7 +264,7 @@ isr_common_subr:
     mov gs, ax
     mov eax, esp
     push eax
-    mov eax, kernel_panic
+    mov eax, fault_handler
     call eax
     pop eax
     pop gs

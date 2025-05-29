@@ -6,6 +6,8 @@
 kmem_cache_t	*cache_chain = NULL;
 kmem_cache_t	*free_cache = NULL;
 
+// TODO: Implement lazy allocation for slabs
+
 /* Allocates a page (4096 bytes) of physical memory and map it
  *
  * return: virtual address of mapped page

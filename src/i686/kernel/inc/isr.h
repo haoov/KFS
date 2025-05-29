@@ -36,7 +36,7 @@ extern void	isr29(void);
 extern void	isr30(void);
 extern void	isr31(void);
 
-void		fault_handler(struct regs *r);
-void		isrs_install(void);
+void fault_handler(struct regs *r);
+void isrs_install(void);
 
 #endif
