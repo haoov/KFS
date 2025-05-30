@@ -6,8 +6,6 @@
 kmem_cache_t	*cache_chain = NULL;
 kmem_cache_t	*free_cache = NULL;
 
-// TODO: Implement lazy allocation for slabs
-
 /* Allocates a page (4096 bytes) of physical memory and map it
  *
  * return: virtual address of mapped page
@@ -30,14 +28,15 @@ void	*kmem_alloc_page(void) {
 
 void kmem_free_page(void *addr) {
 	uint32_t *pte;
-	void *paddr;
 
 	// Get page table entry
 	pte = PTE_VADDR(PDIR_IDX(addr), PTAB_IDX(addr));
+
 	// Removing flags to get the physical address
-	paddr = (void*)(*pte & 0xFFFFF000);
+	void *paddr = (void*)(*pte & 0xFFFFF000);
 
 	pmm_free_pages(paddr, 1);
+
 	vmm_umap_page(addr);
 }
 
@@ -129,6 +128,39 @@ void remove_slab(kmem_slab_t *slab, kmem_cache_t *cache) {
 	kmem_free_page(slab);
 }
 
+uint32_t compute_page_per_slab(uint32_t obj_size) {
+
+	if (!obj_size) return 0;
+
+	uint32_t meta_size = sizeof(slab_obj_t);
+	uint32_t page_nb = 1;
+
+	while (page_nb < MAX_PAGES_PER_SLAB) {
+
+		uint32_t slab_size = PAGE_SIZE * page_nb;
+		if (slab_size < meta_size) {
+			++page_nb;
+			continue;
+		}
+
+		uint32_t usable_space = slab_size - meta_size;
+		uint32_t obj_per_slab = usable_space / obj_size;
+		if (obj_per_slab == 0) {
+			++page_nb;
+			continue;
+		}
+
+		uint32_t leftover = usable_space % obj_size;
+		if (leftover <= usable_space / 8) {
+			return page_nb;
+		}
+
+		++page_nb;
+	}
+
+	return 0; // Object too large
+}
+
 kmem_cache_t	*create_cache(uint32_t obj_size) {
 	kmem_cache_t	*cache;
 
@@ -137,7 +169,7 @@ kmem_cache_t	*create_cache(uint32_t obj_size) {
 	cache = free_cache;
 
 	cache->obj_size = obj_size;
-	cache->page_per_slab = 1;
+	cache->page_per_slab = compute_page_per_slab(obj_size);
 	cache->slabs = NULL;
 
 	free_cache = free_cache->next;

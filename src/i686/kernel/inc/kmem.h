@@ -3,14 +3,16 @@
 
 #include "klib.h"
 
+#define MAX_PAGES_PER_SLAB 128
+
 typedef struct slab_obj {
 	struct slab_obj *next_free;
 } slab_obj_t;
 
 typedef struct kmem_slab {
-	void				*s_mem;			// Starting address of first object
-	uint32_t			total_obj;	// Total number of ojbects in slab
-	uint32_t			free_obj;		// Number of free objects in slab
+	void				*s_mem; // Starting address of first object
+	uint32_t			total_obj; // Total number of ojbects in slab
+	uint32_t			free_obj; // Number of free objects in slab
 	slab_obj_t			*free_list;
 	struct kmem_slab	*next;
 } kmem_slab_t;
