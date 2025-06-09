@@ -26,10 +26,10 @@ KERNEL_OBJS		:= $(patsubst $(KERNEL_SRC)/%.c,$(KERNEL_BUILD)/%.c.o,$(KERNEL_SRCS
 
 # Compiler
 CC				:= $(ARCH)-elf-gcc
-CFLAGS			:= -fno-builtin -fno-stack-protector -nostdlib -nodefaultlibs -o0
+CFLAGS			:= -fno-builtin -fno-stack-protector -nostdlib -nodefaultlibs -o0 -mcmodel=kernel
 LINK			:= $(ARCH)-elf-ld
 ASM				:= nasm
-ASMFLAGS		:= -f elf32
+ASMFLAGS		:= -f elf64
 
 # Building iso for specified ARCH
  build:

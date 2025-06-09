@@ -1,0 +1,54 @@
+#ifndef INTF_H
+#define INTF_H
+
+#include "klib.h"
+
+#define COLS_NUM	80
+#define ROWS_NUM	25
+#define SCR_SIZE	(COLS_NUM * ROWS_NUM)
+#define SCR_NUM		1
+
+#define PCOLOR_BLACK		0x0
+#define PCOLOR_BLUE			0x1
+#define PCOLOR_GREEN		0x2
+#define PCOLOR_CYAN			0x3
+#define PCOLOR_RED			0x4
+#define PCOLOR_MAGENTA		0x5
+#define PCOLOR_BROWN		0x6
+#define PCOLOR_LIGHT_GRAY	0x7
+#define PCOLOR_DARK_GRAY	0x8
+#define PCOLOR_LIGHT_BLUE	0x9
+#define PCOLOR_LIGHT_GREEN	0xA
+#define PCOLOR_LIGHT_CYAN	0xB
+#define PCOLOR_LIGHT_RED	0xC
+#define PCOLOR_PINK			0xD
+#define PCOLOR_YELLOW		0xE
+#define PCOLOR_WHITE		0xF
+
+/* Return the [c][r] index for the scr buffer */
+#define SCR_BUF_IDX(c, r)	(c + r * COLS_NUM)
+
+struct chr
+{
+	uint8_t	code;
+	uint8_t	color;
+};
+
+struct scr
+{
+	struct chr	buffer[SCR_SIZE];
+	uint8_t		col;
+	uint8_t		row;
+	uint8_t		color;
+};
+
+void set_scr_color(uint8_t color);
+void kclear();
+void kprint_char(const char c);
+void kdel_char(void);
+
+void kprint_hex(uint64_t n);
+void kprint_int(int n);
+void kprint_str(const char *str);
+
+#endif
