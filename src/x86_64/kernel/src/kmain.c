@@ -1,7 +1,9 @@
+#include "multiboot2.h"
 #include "kernel.h"
 #include "idt.h"
 #include "intf.h"
 #include "kb.h"
+#include "memory.h"
 #include "ksh.h"
 
 void	entry_msg() {
@@ -17,9 +19,10 @@ void	entry_msg() {
 	kprint_char(NEWLINE);
 }
 
-void kmain() {
+void kmain(uint64_t mb_infos_addr) {
 	idt_init();
 	keyboard_setup();
 	entry_msg();
 	ksh_prompt();
+	memblock_init(mb_infos_addr);
 }
