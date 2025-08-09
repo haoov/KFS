@@ -32,9 +32,9 @@ ASM				:= nasm
 ASMFLAGS		:= -f elf64
 
 # Building iso for specified ARCH
- build:
-	sudo docker build buildenv -t kfs-buildenv
-	sudo docker run --rm -v .:/root/KFS kfs-buildenv make $(TARGET) ARCH=$(ARCH)
+build:
+	docker build buildenv -t kfs-buildenv
+	docker run --rm -v .:/root/KFS kfs-buildenv make $(TARGET) ARCH=$(ARCH)
 
 run:
 	kvm $(ARCH_DIST)/$(TARGET)

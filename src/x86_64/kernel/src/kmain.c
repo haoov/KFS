@@ -3,7 +3,7 @@
 #include "idt.h"
 #include "intf.h"
 #include "kb.h"
-#include "memory.h"
+#include "memblock.h"
 #include "ksh.h"
 
 void	entry_msg() {

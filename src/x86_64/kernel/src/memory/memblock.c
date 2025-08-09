@@ -1,8 +1,10 @@
-#include "memory.h"
+#include "memblock.h"
 #include "multiboot2.h"
 #include "intf.h"
 
-int count_regions(struct mb_tag *start, struct mb_tag *end) {
+static struct memblock_manager mb_manager;
+
+void count_regions(struct mb_tag *start, struct mb_tag *end) {
 	struct mb_tag *tag = start;
 	int mmap_entries = 0;
 
@@ -13,13 +15,21 @@ int count_regions(struct mb_tag *start, struct mb_tag *end) {
 			uint32_t entries_size = mmap_tag->size - sizeof(struct mb_tag_mmap);
 			mmap_entries = entries_size / mmap_tag->ent_size;
 
-			return mmap_entries;
+			for (int i = 0; i < mmap_entries; ++i) {
+				struct mb_mmap_entry ent = mmap_tag->entries[i];
+
+				if (ent.type == MB_MEMORY_AVAILABLE) {
+					++mb_manager.memory.count;
+				}
+				else if (ent.type == MB_MEMORY_RESERVED) {
+					++mb_manager.reserved.count;
+				}
+			}
+
 		}
 
 		tag = (struct mb_tag*)((uint8_t*)tag + ALIGN(tag->size, 8));
 	}
-
-	return 0;
 }
 
 void memblock_init(uint64_t mb_infos_addr) {
@@ -29,6 +39,6 @@ void memblock_init(uint64_t mb_infos_addr) {
 	struct mb_tag *start = (struct mb_tag *)(mb_infos_addr + 8);
 	struct mb_tag *end = (struct mb_tag *)(mb_infos_addr + total_size);
 
-	int region_nb = count_regions(start, end);
 
+	count_regions(start, end);
 }
