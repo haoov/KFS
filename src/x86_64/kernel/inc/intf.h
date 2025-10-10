@@ -28,14 +28,12 @@
 /* Return the [c][r] index for the scr buffer */
 #define SCR_BUF_IDX(c, r)	(c + r * COLS_NUM)
 
-struct chr
-{
+struct chr {
 	uint8_t	code;
 	uint8_t	color;
 };
 
-struct scr
-{
+struct scr {
 	struct chr	buffer[SCR_SIZE];
 	uint8_t		col;
 	uint8_t		row;

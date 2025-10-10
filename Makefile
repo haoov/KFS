@@ -1,6 +1,6 @@
 # Project
 TARGET			:= kfs.iso
-ARCH			:= i686
+ARCH			:= x86_64
 DIST_DIR		:= dist
 BUILD_DIR		:= build
 SRC_DIR			:= src

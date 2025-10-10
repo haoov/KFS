@@ -4,19 +4,12 @@
 #include "types.h"
 
 #define ALIGN(v, n)	((v + (n - 1)) & ~(n - 1))
-
-struct memblock {
-	uint64_t base;
-	uint64_t size;
-	struct memblock *next;
-};
+#define	INIT_MEMEBLOCK_REGIONS 128
 
 struct memblock_region {
 	uint64_t base;
 	uint64_t size;
-	struct memblock_manager *free;
-	struct memblock_manager *used;
-	struct memblock_region *next;
+	uint32_t flags;
 };
 
 struct memblock_type {

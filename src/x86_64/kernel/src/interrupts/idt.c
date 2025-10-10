@@ -117,7 +117,7 @@ void irq_uninstall(int index) {
 }
 
 void interrupt_handler(struct interrupt_frame *frame) {
-	void (*handler)(struct interrupt_frame *fram);
+	void (*handler)(struct interrupt_frame *f);
 	switch (frame->int_no) {
 		case 0 ... 31:
 			kernel_panic(except_msg[frame->int_no], frame);

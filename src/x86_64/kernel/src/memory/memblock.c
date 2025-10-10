@@ -2,7 +2,34 @@
 #include "multiboot2.h"
 #include "intf.h"
 
-static struct memblock_manager mb_manager;
+// Initiliaze static structures
+static struct memblock_region mb_memory_init[INIT_MEMEBLOCK_REGIONS];
+static struct memblock_region mb_reserved_init[INIT_MEMEBLOCK_REGIONS];
+static struct memblock_manager mb_manager = {
+	.memory = {
+		.count = 0,
+		.max = INIT_MEMEBLOCK_REGIONS,
+		.total_size = 0,
+		.regions = mb_memory_init
+	},
+	.reserved = {
+		.count = 0,
+		.max = INIT_MEMEBLOCK_REGIONS,
+		.total_size = 0,
+		.regions = mb_reserved_init
+	}
+};
+
+void memblock_add(uint64_t addr, uint64_t size) {
+	if (mb_manager.memory.count + 1 == mb_manager.memory.max) {
+		// Resize
+		return;
+	}
+	++mb_manager.memory.count;
+	struct memblock_region *region = &mb_manager.memory.regions[mb_manager.memory.count];
+	region->base = addr;
+	region->size = size;
+}
 
 void count_regions(struct mb_tag *start, struct mb_tag *end) {
 	struct mb_tag *tag = start;
@@ -20,6 +47,7 @@ void count_regions(struct mb_tag *start, struct mb_tag *end) {
 
 				if (ent.type == MB_MEMORY_AVAILABLE) {
 					++mb_manager.memory.count;
+					mb_manager.memory.total_size += ent.len;
 				}
 				else if (ent.type == MB_MEMORY_RESERVED) {
 					++mb_manager.reserved.count;
@@ -41,4 +69,10 @@ void memblock_init(uint64_t mb_infos_addr) {
 
 
 	count_regions(start, end);
+	kprint_str("Available memory regions: ");
+	kprint_int(mb_manager.memory.count);
+	kprint_char('\n');
+	kprint_str("Reserved memory regions: ");
+	kprint_int(mb_manager.reserved.count);
+	kprint_char('\n');
 }
