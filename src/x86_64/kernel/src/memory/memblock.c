@@ -20,25 +20,95 @@ static struct memblock_manager mb_manager = {
 	}
 };
 
-void memblock_add(uint64_t addr, uint64_t size) {
-	if (mb_manager.memory.count + 1 == mb_manager.memory.max) {
+/* Add the specified memory range to memblock type
+ * */
+void memblock_add(struct memblock_type *type, uint64_t addr, uint64_t size) {
+	if (type->count == INIT_MEMEBLOCK_REGIONS) {
 		// Resize
 		return;
 	}
-	++mb_manager.memory.count;
-	struct memblock_region *region = &mb_manager.memory.regions[mb_manager.memory.count];
+	struct memblock_region *region = &type->regions[type->count];
+	++type->count;
 	region->base = addr;
 	region->size = size;
+	type->total_size += size;
 }
 
-void count_regions(struct mb_tag *start, struct mb_tag *end) {
+/* Remove memory region from reserved ones
+ * */
+int memblock_free(uint64_t base, uint64_t size) {
+	struct memblock_type *reserved = &mb_manager.reserved;
+
+	for (uint64_t count = 0; count < reserved->count; ++count) {
+		struct memblock_region *region = &reserved->regions[count];
+
+		if (region->base == base && region->size == size) {
+			for (uint64_t i = count; i < reserved->count - 1 ; ++i) {
+				reserved->regions[i] = reserved->regions[i + 1];
+			}
+			--reserved->count;
+			reserved->total_size -= size;
+			return 0;
+		}
+	}
+	return -1;
+}
+
+/* Check if a given memory range is reserved
+ * */
+bool is_reserved(uint64_t base, uint64_t size) {
+	struct memblock_type *reserved = &mb_manager.reserved;
+	
+	for (uint64_t count = 0; count < reserved->count; ++count) {
+		struct memblock_region *region = &reserved->regions[count];
+		uint64_t region_end = region->base + region->size;
+		uint64_t end = base + size;
+
+		if (base <= region_end && end >= region->base) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void *memblock_alloc(uint64_t size) {
+	int align = sizeof(void*);
+	struct memblock_type *memory = &mb_manager.memory;
+
+	// Search for memory region
+	for (uint64_t count = 0; count < memory->count; ++count) {
+		struct memblock_region *region = &memory->regions[count];
+
+		uint64_t start = ALIGN(region->base, align);
+		uint64_t end = region->base + region->size;
+
+		if (start + size > end) {
+			continue;
+		}
+
+		// Search for space in region
+		for (uint64_t addr = start; addr < end - size; addr += align) {
+			if (!is_reserved(addr, size)) {
+				memblock_add(&mb_manager.reserved, addr, size);
+				return (void*)addr;
+			}
+		}
+	}
+	return NULL;
+}
+
+/* Parse multiboot structure to get available memory regions
+ * */
+void parse_mmap(struct mb_tag *start, struct mb_tag *end) {
 	struct mb_tag *tag = start;
 	int mmap_entries = 0;
 
 	while (tag < end && tag->type) {
 		if (tag->type == MB_TAG_TYPE_MMAP) {
+			// Tag represent memory map entries
 			struct mb_tag_mmap *mmap_tag = (struct mb_tag_mmap*)tag;
 
+			// Get number of memory map entries
 			uint32_t entries_size = mmap_tag->size - sizeof(struct mb_tag_mmap);
 			mmap_entries = entries_size / mmap_tag->ent_size;
 
@@ -46,11 +116,8 @@ void count_regions(struct mb_tag *start, struct mb_tag *end) {
 				struct mb_mmap_entry ent = mmap_tag->entries[i];
 
 				if (ent.type == MB_MEMORY_AVAILABLE) {
-					++mb_manager.memory.count;
-					mb_manager.memory.total_size += ent.len;
-				}
-				else if (ent.type == MB_MEMORY_RESERVED) {
-					++mb_manager.reserved.count;
+					// Address range is available so add it to the manager
+					memblock_add(&mb_manager.memory, ent.addr, ent.len);
 				}
 			}
 
@@ -67,12 +134,6 @@ void memblock_init(uint64_t mb_infos_addr) {
 	struct mb_tag *start = (struct mb_tag *)(mb_infos_addr + 8);
 	struct mb_tag *end = (struct mb_tag *)(mb_infos_addr + total_size);
 
-
-	count_regions(start, end);
-	kprint_str("Available memory regions: ");
-	kprint_int(mb_manager.memory.count);
-	kprint_char('\n');
-	kprint_str("Reserved memory regions: ");
-	kprint_int(mb_manager.reserved.count);
-	kprint_char('\n');
+	parse_mmap(start, end);
+	memblock_add(&mb_manager.reserved, 0, 0xFFFFF);
 }
